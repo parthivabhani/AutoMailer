@@ -1,6 +1,6 @@
 # Auto Mailer Pro 🚀
 
-Auto Mailer Pro is a high-performance, enterprise-grade AI-powered email marketing and campaign distribution suite. It features a fully-typed, robust monorepo architecture leveraging **TanStack Start** (SSR/SPA framework) on the frontend and a **Node.js + Express + TypeScript** server on the backend, integrated with **Supabase** for database management and authentication, and **Groq Cloud API** for smart lead segmentation and content generation.
+Auto Mailer Pro is a high-performance,enterprise-grade AI-powered email marketing and campaign distribution suite. It features a fully-typed, robust monorepo architecture leveraging **TanStack Start** (SSR/SPA framework) on the frontend and a **Node.js + Express + TypeScript** server on the backend, integrated with **Supabase** for database management and authentication, and **Groq Cloud API** for smart lead segmentation and content generation.
 
 ---
 
