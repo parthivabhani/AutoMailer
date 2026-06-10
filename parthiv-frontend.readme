@@ -7,26 +7,29 @@ This document provides a comprehensive overview of the frontend architecture, UI
 - **Framework**: React with TypeScript
 - **Routing**: TanStack Router (file-based routing)
 - **UI Components**: shadcn/ui (Radix UI primitives)
-- **Styling**: TailwindCSS
+- **Styling**: TailwindCSS & Vanilla CSS (glassmorphism layer)
+- **Visuals**: HTML5 Canvas (dynamic parallax particles)
+- **Charts**: Recharts (gradient analytics area charts)
 - **Icons**: Lucide React
 - **State Management**: React Context (AuthContext)
 - **API Client**: Axios
 - **Notifications**: Sonner
-- **Animations**: Custom animation wrappers with TailwindCSS
+- **Animations**: Custom animation wrappers with TailwindCSS & CSS transitions
 
 ## Project Structure
 ```
 src/
 ├── components/
 │   ├── layout/
-│   │   ├── DashboardShell.tsx      # Main layout wrapper for authenticated pages
-│   │   ├── Sidebar.tsx             # Navigation sidebar with role-based menus
-│   │   └── Topbar.tsx              # Header with user profile and theme toggle
+│   │   ├── DashboardShell.tsx      # Main layout wrapper for authenticated pages (contains canvas background layer)
+│   │   ├── Sidebar.tsx             # Navigation sidebar with role-based menus and active sliding indicator
+│   │   └── Topbar.tsx              # Header with user profile, theme toggle, and notification bell
 │   ├── ui/                         # shadcn/ui components (46 components)
+│   │   ├── dynamic-background.tsx  # Dynamic interactive canvas background with mouse parallax
 │   │   ├── loading-skeleton.tsx    # Custom skeleton loaders
 │   │   ├── empty-state.tsx         # Empty state components
-│   │   └── animated-wrapper.tsx   # Animation wrapper components
-│   └── StatCard.tsx                # Enhanced stat card component
+│   │   └── animated-wrapper.tsx    # Animation wrapper components
+│   └── StatCard.tsx                # Enhanced stat card component with hover gradient effects
 ├── lib/
 │   ├── auth.tsx                    # Authentication context and logic
 │   ├── admin-nav.ts                # Admin navigation menu
@@ -34,15 +37,16 @@ src/
 │   ├── theme.ts                    # Theme management (dark/light mode)
 │   └── utils.ts                    # Utility functions (cn, etc.)
 ├── routes/
-│   ├── landing.tsx                 # Landing page (new)
-│   ├── login.tsx                   # Login page
+│   ├── landing.tsx                 # Landing page with AI personalization simulator widget
+│   ├── login.tsx                   # Split-screen login page with quick-credential tiles
+│   ├── onboarding.tsx              # SMTP onboarding stepper & documentation links
 │   ├── _authenticated/             # Protected routes
-│   │   ├── admin/                  # Admin dashboard pages
-│   │   ├── sender/                 # Sender pages
-│   │   └── super-admin.tsx         # Super-admin page
+│   │   ├── admin/                  # Admin dashboard pages (Recharts delivery volume stats, CSV workspace, settings)
+│   │   ├── sender/                 # Sender pages (personalized composer workspace with token validation)
+│   │   └── super-admin.tsx         # Super-admin page for platform statistics
 │   └── index.tsx                   # Root route (redirects based on auth)
 └── services/
-    └── api.ts                      # Axios API client with typed endpoints
+    └── api.ts                      # Axios API client with typed endpoints & type-safe error boundaries
 ```
 
 ## Core Components
@@ -52,30 +56,35 @@ src/
 #### DashboardShell
 Main layout wrapper for authenticated pages.
 - Props: `nav`, `navTitle`, `title`, `subtitle`, `children`
-- Features: Responsive sidebar, topbar, main content area
-- Used by: All authenticated pages
+- Features: Responsive sidebar, topbar, main content area, integrated dynamic canvas background.
+- Used by: All authenticated pages.
 
 #### Sidebar
 Navigation sidebar with role-based menus.
 - Props: `items`, `title`
-- Features: Active state highlighting, hover effects, system status indicator
-- Animations: Icon scale on hover, smooth transitions
-- Styling: Gradient background, shadow effects
+- Features: Active state highlighting, hover effects, system status indicator, active capsule sliding transition bar.
+- Animations: Icon scale on hover, smooth translations.
+- Styling: Transparent glassmorphic background, shadow effects.
 
 #### Topbar
 Header with user profile and actions.
 - Props: `title`, `subtitle`
-- Features: Avatar with initials, dropdown menu, theme toggle, logout
-- Styling: Gradient background, backdrop blur
+- Features: Avatar with initials, dropdown menu, theme toggle, logout, and notifications indicator.
+- Styling: Transparent glassmorphic background, backdrop blur.
 
 ### UI Components
+
+#### DynamicBackground
+Renders multiple floating, colored orbs utilizing dynamic canvas radial gradients.
+- Features: Responsive mouse move parallax (orbs gravitate toward the user's cursor with lerped easing).
+- Theme Support: Automatically shifts to deeper colors (purple, indigo, sky blue) in dark mode, and soft pastel shades in light mode.
 
 #### StatCard (Enhanced)
 Enhanced statistics display card.
 - Props: `label`, `value`, `hint`, `icon`, `trend`, `className`
-- Features: Gradient backgrounds, trend indicators (up/down), hover effects
-- Animations: Icon scale on hover, background gradient fade-in
-- Styling: Shadow effects, gradient text for values
+- Features: Glassmorphic gradients, trend indicators (up/down), hover float scaling.
+- Animations: Icon scale on hover, background gradient fade-in.
+- Styling: Shadow effects, gradient text for values.
 
 #### Loading Skeletons
 Custom skeleton loaders for loading states.
@@ -99,194 +108,59 @@ Reusable animation components for smooth transitions.
 - `Bounce`: Bounce animation
 - `Spin`: Spin animation
 
-## Pages
+## Pages & Feature Workspaces
 
 ### Landing Page (`/landing`)
-New landing page with modern design.
-- Features: Animated background blobs, floating stats, feature cards with color gradients
-- Sections: Hero, Floating Stats, Features, CTA, Footer
-- Animations: Background pulse effects, card hover effects, icon rotations
-- Headline: "Transform your outreach with AI-powered email automation"
+Modern showroom landing page.
+- Features: Animated text gradients, floating statistics, dynamic canvas background, feature grids.
+- **AI Personalization Simulator**: Interactive widget cycling through target leads (e.g. CEO, Founder) showing dynamic token replacement in template emails in real time.
 
 ### Login Page (`/login`)
-Authentication page with modern design.
-- Features: Gradient background, feature cards, loading spinner
-- Demo accounts: super@demo.io, admin@demo.io, sender@demo.io (password: demo)
-- Animations: Bounce effect on logo, pulse on badge
+Split-screen authentication page.
+- Layout: Left glassmorphic credentials module, right feature banner.
+- **Quick Demo Accounts**: Selectable grid tiles that automatically populate credentials for Super Admin, Admin, and Sender accounts.
+
+### Onboarding Wizard (`/onboarding`)
+SMTP configuration setup stepper.
+- Features: Clear guide on how to generate and use Google App Passwords instead of raw passwords, complete with direct external links to security consoles.
 
 ### Admin Dashboard (`/admin`)
-Admin overview page.
-- Features: Stat cards with loading states, getting started cards
-- Stats: Senders, CSVs uploaded, Emails sent, Pending
-- Animations: Staggered slide-in for stat cards
+Admin campaign analytics overview.
+- **Campaign Analytics Chart**: Embedded Recharts Area Chart displaying sent/delivered/opened email volumes over time with glowing filled gradients.
+- **Outreach Quick Launch**: Interactive shortcut buttons for campaign creation.
 
-### Sender Page (`/sender`)
-Sender dashboard for assigned CSVs.
-- Features: CSV list with selection, table view, empty state
-- Animations: Slide-in effects, hover states on table rows
-- Empty state: Custom message when no CSVs assigned
+### CSV Workspace (`/admin/csv`)
+Side-by-side files manager.
+- Features: File selection panel on the left, interactive lead spreadsheet view on the right.
+- **AI Segmentation Scanner**: Triggers a glowing, backdrop-blurred scanning overlay when analyzing leads to simulate ML parsing.
 
-### Super-Admin Page (`/super-admin`)
-Platform overview page.
-- Features: Admin table with sorting, stat cards, status toggles
-- Animations: Staggered animations, sort indicators, hover effects
-- Table: Sortable columns with visual indicators
+### Senders & Logs Tables (`/admin/senders` and `/admin/logs`)
+- Features: Glass tables with styled status badges, initials-based colored avatar badges, and search bars.
 
-## Design System
+### Personalized Composer (`/sender/compose`)
+Two-column advanced composition workspace.
+- **Live Personalization Previewer**: Renders a formatted rendering of the email text where template tags (e.g. `{name}`) are swapped dynamically as the sender clicks through the list of assigned leads.
+- **Syntax Tokenizer**: Parses email input in real-time, coloring correct variables in purple and warning about invalid variables (e.g., tags not present in the CSV) in glowing red.
+
+## Design System & Styling
 
 ### Color Palette
-- Primary: Brand color (used for CTAs, accents)
-- Background: Main background color
-- Card: Card background with transparency
-- Muted: Secondary text color
-- Border: Border colors with opacity variations
+- Primary: Vibrant violet/purple gradient accents.
+- Background: Dynamic background canvas (deep dark-mode slate or soft light-mode tint).
+- Card: Glassmorphic transparency with backdrop-blur (`16px`).
+- Border: Semi-transparent borders with subtle white/dark highlight lines.
 
-### Typography
-- Headings: Bold, tight tracking
-- Body: Regular, relaxed leading
-- Labels: Uppercase, wide tracking
-- Gradient text: Used for emphasis on headlines
+### Glassmorphism Class Utilities (`src/styles.css`)
+- `.glass-panel`: Dynamic backdrop-blur (`16px`), saturated lighting overlay, and translucent borders.
+- `.glass-input`: Focus-ring styling with scale transition.
+- `.text-gradient-shine`: Gleaming text transitions.
+- `.hover-float`: Elastic hover scaling.
+- Custom styled scrollbars.
 
-### Spacing
-- Cards: p-6 (24px padding)
-- Sections: py-24 (96px vertical padding)
-- Grid gaps: gap-4 to gap-8
-- Button heights: h-9, h-11, h-12
-
-### Shadows
-- Primary shadow: `shadow-primary/25`
-- Card shadow: `shadow-sm`
-- Large shadow: `shadow-xl`, `shadow-2xl`
-- Hover shadow: Enhanced on interaction
-
-### Borders
-- Default: `border-border/50`
-- Primary accent: `border-primary/20`
-- Hover state: `border-primary/30`
-
-## Animations
-
-### Built-in Tailwind Animations
-- `animate-pulse`: Pulse effect
-- `animate-bounce`: Bounce effect
-- `animate-spin`: Spin effect
-
-### Custom Animations
-- `animate-in fade-in`: Fade in animation
-- `animate-in slide-in`: Slide in animation
-- `animate-in zoom-in`: Zoom in animation
-- Delay support: `delay-{ms}` for staggered animations
-
-### Animation Patterns
-1. Staggered slide-in for lists (delay: i * 100)
-2. Fade-in for page sections
-3. Scale-in for badges and small elements
-4. Hover effects: scale, rotate, color changes
-
-## API Integration
-
-### API Client (Axios)
-- Base URL: Configured via `VITE_API_BASE_URL`
-- Interceptor: Adds authorization token from localStorage
-- Response handling: Wrapped format `{ success, data, meta }`
-
-### API Endpoints
-```typescript
-PlatformAPI: listAdmins, setAdminStatus, platformStats
-AdminAPI: overviewStats, listSenders, createSender, deleteSender, listCSVs, uploadCSV, segmentCSV, assignCSV, listEmailLogs, saveSMTP
-SenderAPI: myAssignedCSVs, aiGenerateEmail, aiHumanize, aiSubjects, sendCampaign
-```
-
-## Authentication
-
-### Auth Context
-- State: `user`, `loading`, `login`, `logout`, `persist`
-- Storage: localStorage for token and user data
-- Navigation: Automatic redirects based on role and SMTP status
-
-### Role-Based Navigation
-- super_admin → `/super-admin`
-- admin → `/admin` (or `/onboarding` if SMTP not configured)
-- sender → `/sender`
-
-## Responsive Design
-
-### Breakpoints
-- Mobile: Default
-- Tablet: `md:` (768px)
-- Desktop: `lg:` (1024px)
-
-### Responsive Patterns
-- Sidebar: Hidden on mobile, visible on md+
-- Grid: 1 column on mobile, 2-4 columns on desktop
-- Navigation: Hamburger menu on mobile (not implemented yet)
-- Tables: Horizontal scroll on mobile
-
-## Performance Optimizations
-
-### Code Splitting
-- Route-based code splitting via TanStack Router
-- Lazy loading of heavy components
-
-### Loading States
-- Skeleton loaders for all data-fetching components
-- Smooth transitions between loading and loaded states
-
-### Image Optimization
-- Not yet implemented (future enhancement)
-
-## Accessibility
-
-### Keyboard Navigation
-- All interactive elements are keyboard accessible
-- Focus states on all buttons and links
-
-### ARIA Labels
-- Icon buttons have aria-label attributes
-- Semantic HTML structure
-
-### Color Contrast
-- WCAG AA compliant color combinations
-- Muted colors for secondary text
-
-## Future Enhancements
-
-### Planned Features
-- Mobile navigation menu
-- Image optimization
-- More empty state illustrations
-- Advanced animations (framer-motion)
-- Dark mode improvements
-- PWA support
-
-### Known Issues
-- Mobile navigation not fully implemented
-- Some animations may need performance optimization on lower-end devices
-
-## Browser Support
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Last 2 versions
-- No IE support
-
-## Development Notes
-
-### Adding New Pages
-1. Create route file in `src/routes/`
-2. Use `createFileRoute()` to define the route
-3. Wrap with `DashboardShell` for authenticated pages
-4. Add navigation item to appropriate nav file
-
-### Adding New UI Components
-1. Use shadcn/ui CLI: `npx shadcn-ui@latest add [component]`
-2. Components are added to `src/components/ui/`
-3. Follow existing component patterns
-
-### Styling Guidelines
-- Use TailwindCSS utility classes
-- Avoid inline styles
-- Use `cn()` utility for conditional classes
-- Follow spacing and color conventions
+## API Integration & Error Boundaries
+- **Axios Client**: Configured with a default interceptor adding token headers from localStorage.
+- **Robust Type-Safety**: Extracted all explicit `any` catch block overrides. Implemented type-safe `unknown` error guards that fallback cleanly to generic error messages when Axios exceptions occur.
 
 ## Version
-- Frontend: v2.0.0
+- Frontend: v2.1.0
 - Last Updated: June 2026
