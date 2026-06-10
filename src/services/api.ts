@@ -5,8 +5,7 @@ import axios from "axios";
  * Point this at your Node.js + Express + Supabase backend via VITE_API_BASE_URL.
  * Until then, calls fall back to mock data in `src/lib/mock-data.ts`.
  */
-export const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "/api";
+export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "/api";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

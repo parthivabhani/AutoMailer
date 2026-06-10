@@ -27,7 +27,7 @@ import { ATTACHMENT_CONFIG } from "../config/constants.js";
 export async function enforceAttachmentPolicy(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const authReq = req as AuthenticatedRequest;
 
@@ -55,8 +55,8 @@ export async function enforceAttachmentPolicy(
     if (!attachmentsEnabled) {
       return next(
         new AttachmentPolicyViolationError(
-          "Attachments are disabled for your organization. Contact your administrator."
-        )
+          "Attachments are disabled for your organization. Contact your administrator.",
+        ),
       );
     }
 
@@ -71,15 +71,17 @@ export async function enforceAttachmentPolicy(
       if (!senderPolicy?.can_use_attachments) {
         return next(
           new AttachmentPolicyViolationError(
-            "You are not permitted to send attachments. Contact your administrator."
-          )
+            "You are not permitted to send attachments. Contact your administrator.",
+          ),
         );
       }
     }
 
     // 4. Validate each file
-    const allowedMimeTypes: string[] = policy?.allowed_mime_types || ATTACHMENT_CONFIG.ALLOWED_MIME_TYPES;
-    const maxSizeBytes = (policy?.max_size_mb || ATTACHMENT_CONFIG.DEFAULT_MAX_SIZE_MB) * 1024 * 1024;
+    const allowedMimeTypes: string[] =
+      policy?.allowed_mime_types || ATTACHMENT_CONFIG.ALLOWED_MIME_TYPES;
+    const maxSizeBytes =
+      (policy?.max_size_mb || ATTACHMENT_CONFIG.DEFAULT_MAX_SIZE_MB) * 1024 * 1024;
     const fileList = Array.isArray(files) ? files : Object.values(files).flat();
 
     for (const file of fileList as Express.Multer.File[]) {
@@ -88,8 +90,8 @@ export async function enforceAttachmentPolicy(
       if (ATTACHMENT_CONFIG.DANGEROUS_EXTENSIONS.includes(ext as any)) {
         return next(
           new AttachmentPolicyViolationError(
-            `File type '${ext}' is not allowed for security reasons.`
-          )
+            `File type '${ext}' is not allowed for security reasons.`,
+          ),
         );
       }
 
@@ -97,8 +99,8 @@ export async function enforceAttachmentPolicy(
       if (!allowedMimeTypes.includes(file.mimetype)) {
         return next(
           new AttachmentPolicyViolationError(
-            `MIME type '${file.mimetype}' is not permitted. Allowed: ${allowedMimeTypes.join(", ")}`
-          )
+            `MIME type '${file.mimetype}' is not permitted. Allowed: ${allowedMimeTypes.join(", ")}`,
+          ),
         );
       }
 
@@ -107,8 +109,8 @@ export async function enforceAttachmentPolicy(
         const maxMb = maxSizeBytes / 1024 / 1024;
         return next(
           new AttachmentPolicyViolationError(
-            `File '${file.originalname}' exceeds the maximum size of ${maxMb}MB.`
-          )
+            `File '${file.originalname}' exceeds the maximum size of ${maxMb}MB.`,
+          ),
         );
       }
     }

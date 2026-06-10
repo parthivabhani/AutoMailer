@@ -21,7 +21,7 @@ interface InterpolateOptions {
 export function interpolate(
   template: string,
   data: Record<string, any>,
-  options: InterpolateOptions = {}
+  options: InterpolateOptions = {},
 ): string {
   if (!template) return "";
   let result = template;
@@ -34,15 +34,15 @@ export function interpolate(
 
   // Find all placeholder patterns: {some_variable_name}
   const placeholderRegex = /\{([a-zA-Z0-9_\-\s]+)\}/g;
-  
+
   result = result.replace(placeholderRegex, (match, keyName) => {
     const cleanKey = keyName.trim().toLowerCase();
-    
+
     // 1. Try lead data
     if (cleanKey in lookup) {
       return lookup[cleanKey];
     }
-    
+
     // 2. Try common aliases (e.g. name / first_name / firstname)
     if (cleanKey === "name" || cleanKey === "firstname" || cleanKey === "first_name") {
       const nameVal = lookup.name || lookup.firstname || lookup.first_name || lookup.recipient_name;

@@ -45,62 +45,74 @@ const SubjectsSchema = {
 
 // ── POST /ai/generate ─────────────────────────────────────────────────────────
 
-router.post("/generate", validate(GenerateSchema), async (req: AuthenticatedRequest, res: Response) => {
-  const { brief, recipient } = req.body;
+router.post(
+  "/generate",
+  validate(GenerateSchema),
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { brief, recipient } = req.body;
 
-  try {
-    const result = await aiRouter.generateEmail({
-      brief,
-      recipient,
-      businessId: req.user!.businessId || req.user!.userId,
-      userId: req.user!.userId,
-    });
+    try {
+      const result = await aiRouter.generateEmail({
+        brief,
+        recipient,
+        businessId: req.user!.businessId || req.user!.userId,
+        userId: req.user!.userId,
+      });
 
-    // Return just the content string for backward compatibility
-    return sendSuccess(res, result.content);
-  } catch (err: any) {
-    logger.error({ err, userId: req.user?.userId }, "AI generate failed");
-    return sendError(res, 500, "AI_ERROR", "Failed to generate email. Please try again.");
-  }
-});
+      // Return just the content string for backward compatibility
+      return sendSuccess(res, result.content);
+    } catch (err: any) {
+      logger.error({ err, userId: req.user?.userId }, "AI generate failed");
+      return sendError(res, 500, "AI_ERROR", "Failed to generate email. Please try again.");
+    }
+  },
+);
 
 // ── POST /ai/humanize ─────────────────────────────────────────────────────────
 
-router.post("/humanize", validate(HumanizeSchema), async (req: AuthenticatedRequest, res: Response) => {
-  const { body } = req.body;
+router.post(
+  "/humanize",
+  validate(HumanizeSchema),
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { body } = req.body;
 
-  try {
-    const result = await aiRouter.humanizeEmail({
-      body,
-      businessId: req.user!.businessId || req.user!.userId,
-      userId: req.user!.userId,
-    });
+    try {
+      const result = await aiRouter.humanizeEmail({
+        body,
+        businessId: req.user!.businessId || req.user!.userId,
+        userId: req.user!.userId,
+      });
 
-    return sendSuccess(res, result.content);
-  } catch (err: any) {
-    logger.error({ err }, "AI humanize failed");
-    return sendError(res, 500, "AI_ERROR", "Failed to humanize email. Please try again.");
-  }
-});
+      return sendSuccess(res, result.content);
+    } catch (err: any) {
+      logger.error({ err }, "AI humanize failed");
+      return sendError(res, 500, "AI_ERROR", "Failed to humanize email. Please try again.");
+    }
+  },
+);
 
 // ── POST /ai/subjects ─────────────────────────────────────────────────────────
 
-router.post("/subjects", validate(SubjectsSchema), async (req: AuthenticatedRequest, res: Response) => {
-  const { body, count } = req.body;
+router.post(
+  "/subjects",
+  validate(SubjectsSchema),
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { body, count } = req.body;
 
-  try {
-    const result = await aiRouter.generateSubjects({
-      body,
-      count,
-      businessId: req.user!.businessId || req.user!.userId,
-      userId: req.user!.userId,
-    });
+    try {
+      const result = await aiRouter.generateSubjects({
+        body,
+        count,
+        businessId: req.user!.businessId || req.user!.userId,
+        userId: req.user!.userId,
+      });
 
-    return sendSuccess(res, result.content);
-  } catch (err: any) {
-    logger.error({ err }, "AI subjects failed");
-    return sendError(res, 500, "AI_ERROR", "Failed to generate subjects. Please try again.");
-  }
-});
+      return sendSuccess(res, result.content);
+    } catch (err: any) {
+      logger.error({ err }, "AI subjects failed");
+      return sendError(res, 500, "AI_ERROR", "Failed to generate subjects. Please try again.");
+    }
+  },
+);
 
 export default router;

@@ -12,25 +12,21 @@ import type { Request } from "express";
 const router = Router();
 
 // POST /auth/login
-router.post(
-  "/login",
-  validate(LoginSchema),
-  async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+router.post("/login", validate(LoginSchema), async (req: Request, res: Response) => {
+  const { email, password } = req.body;
 
-    try {
-      const result = await authService.login(email, password);
-      return sendSuccess(res, result);
-    } catch (err: any) {
-      return sendError(
-        res,
-        err.statusCode || 400,
-        err.code || "LOGIN_ERROR",
-        err.message || "Invalid email or password."
-      );
-    }
+  try {
+    const result = await authService.login(email, password);
+    return sendSuccess(res, result);
+  } catch (err: any) {
+    return sendError(
+      res,
+      err.statusCode || 400,
+      err.code || "LOGIN_ERROR",
+      err.message || "Invalid email or password.",
+    );
   }
-);
+});
 
 // POST /auth/logout
 router.post("/logout", async (req: Request, res: Response) => {

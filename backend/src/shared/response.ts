@@ -47,7 +47,7 @@ export function sendSuccess<T>(
   res: Response,
   data: T,
   statusCode: number = 200,
-  meta?: SuccessResponse["meta"]
+  meta?: SuccessResponse["meta"],
 ): void {
   const response: SuccessResponse<T> = {
     success: true,
@@ -77,7 +77,7 @@ export function sendPaginated<T>(
     total: number;
     hasMore: boolean;
     nextCursor?: string;
-  }
+  },
 ): void {
   sendSuccess(res, data, 200, {
     timestamp: new Date().toISOString(),
@@ -92,7 +92,7 @@ export function sendError(
   statusCode: number,
   code: string,
   message: string,
-  details?: unknown
+  details?: unknown,
 ): void {
   const response: ErrorResponse = {
     success: false,
@@ -126,6 +126,6 @@ export function sendInternalError(res: Response, message?: string): void {
     res,
     500,
     "INTERNAL_ERROR",
-    message || "An unexpected error occurred. Please try again."
+    message || "An unexpected error occurred. Please try again.",
   );
 }

@@ -78,7 +78,7 @@ async function getTransporter(adminId: string): Promise<Transporter> {
 async function isRecipientDuplicate(
   businessId: string,
   recipientEmail: string,
-  senderOverride: boolean
+  senderOverride: boolean,
 ): Promise<boolean> {
   if (senderOverride) {
     return false; // Admin explicitly allowed re-sending
@@ -133,7 +133,7 @@ async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
 
   workerLogger.info(
     { jobId: job.id, recipientEmail, campaignId, attempt: job.attemptsMade },
-    "Processing email job"
+    "Processing email job",
   );
 
   // 1. Natural delay to mimic human pacing (only on first attempt)
@@ -217,7 +217,7 @@ async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
           sent_at: new Date().toISOString(),
           cooldown_until: null, // Permanent dedup — admin must use sender_override to resend
         },
-        { onConflict: "business_id, recipient_email" }
+        { onConflict: "business_id, recipient_email" },
       );
 
     // 9. Update campaign job status
@@ -226,11 +226,10 @@ async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
     }
 
     workerLogger.info({ jobId: job.id, recipientEmail }, "Email sent successfully");
-
   } catch (sendErr: any) {
     workerLogger.error(
       { jobId: job.id, err: sendErr, recipientEmail, attempt: job.attemptsMade },
-      "Email send failed"
+      "Email send failed",
     );
 
     // Log the failure
@@ -269,24 +268,26 @@ async function logEmailResult(data: {
   status: "sent" | "failed" | "skipped_duplicate" | "skipped_policy";
   errorMessage?: string;
 }) {
-  await getSupabaseAdmin().from("email_logs").insert({
-    business_id: data.businessId,
-    campaign_id: data.campaignId || null,
-    campaign_job_id: data.campaignJobId || null,
-    sender_id: data.senderId,
-    recipient_email: data.recipientEmail,
-    recipient_name: data.recipientName,
-    subject: data.subject,
-    body: data.body,
-    status: data.status,
-    error_message: data.errorMessage || null,
-  });
+  await getSupabaseAdmin()
+    .from("email_logs")
+    .insert({
+      business_id: data.businessId,
+      campaign_id: data.campaignId || null,
+      campaign_job_id: data.campaignJobId || null,
+      sender_id: data.senderId,
+      recipient_email: data.recipientEmail,
+      recipient_name: data.recipientName,
+      subject: data.subject,
+      body: data.body,
+      status: data.status,
+      error_message: data.errorMessage || null,
+    });
 }
 
 async function updateCampaignJobStatus(
   jobId: string,
   status: "sent" | "failed" | "skipped" | "processing",
-  errorMessage?: string
+  errorMessage?: string,
 ) {
   await getSupabaseAdmin()
     .from("campaign_jobs")
@@ -305,18 +306,14 @@ let _emailWorker: Worker | null = null;
 export function startEmailWorker(): Worker {
   if (_emailWorker) return _emailWorker;
 
-  _emailWorker = new Worker<EmailJobData>(
-    QUEUE_NAMES.EMAIL_SEND,
-    processEmailJob,
-    {
-      connection: createBullMQConnection(),
-      concurrency: 5, // Process up to 5 emails simultaneously per worker
-      limiter: {
-        max: 10,        // Max 10 jobs processed
-        duration: 1000, // Per second (10/s global rate limit on this worker)
-      },
-    }
-  );
+  _emailWorker = new Worker<EmailJobData>(QUEUE_NAMES.EMAIL_SEND, processEmailJob, {
+    connection: createBullMQConnection(),
+    concurrency: 5, // Process up to 5 emails simultaneously per worker
+    limiter: {
+      max: 10, // Max 10 jobs processed
+      duration: 1000, // Per second (10/s global rate limit on this worker)
+    },
+  });
 
   _emailWorker.on("completed", (job) => {
     workerLogger.debug({ jobId: job.id }, "Email job completed");
@@ -331,7 +328,7 @@ export function startEmailWorker(): Worker {
         await getEmailDeadLetterQueue().add(
           "dead-letter",
           { originalJob: job.data, failReason: err.message, failedAt: new Date().toISOString() },
-          { jobId: `dlq:${job.id}` }
+          { jobId: `dlq:${job.id}` },
         );
       } catch (dlqErr) {
         workerLogger.error({ dlqErr }, "Failed to move job to DLQ");

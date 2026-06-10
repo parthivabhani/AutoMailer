@@ -37,9 +37,14 @@ router.patch(
       const result = await superAdminService.updateAdminStatus(id, status);
       return sendSuccess(res, result);
     } catch (err: any) {
-      return sendError(res, 500, "UPDATE_ERROR", err.message || "Failed to update admin account status.");
+      return sendError(
+        res,
+        500,
+        "UPDATE_ERROR",
+        err.message || "Failed to update admin account status.",
+      );
     }
-  }
+  },
 );
 
 // GET /super-admin/stats — Retrieve server stats

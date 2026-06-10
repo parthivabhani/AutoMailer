@@ -37,23 +37,32 @@ const CreateTemplateSchema = {
 
 // ── GET /templates — List templates ──────────────────────────────────────────
 
-router.get("/", validate({ query: PaginationSchema }), async (req: AuthenticatedRequest, res: Response) => {
-  const userId = req.user!.userId;
-  const businessId = req.user!.businessId || userId;
-  const { page = 1, limit = 20 } = req.query as any;
+router.get(
+  "/",
+  validate({ query: PaginationSchema }),
+  async (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user!.userId;
+    const businessId = req.user!.businessId || userId;
+    const { page = 1, limit = 20 } = req.query as any;
 
-  try {
-    const result = await templatesService.getTemplates(businessId, userId, Number(page), Number(limit));
-    return sendSuccess(res, result.data, 200, {
-      page: Number(page),
-      limit: Number(limit),
-      total: result.count,
-      hasMore: result.hasMore,
-    });
-  } catch (err) {
-    return sendError(res, 500, "FETCH_ERROR", "Failed to fetch templates");
-  }
-});
+    try {
+      const result = await templatesService.getTemplates(
+        businessId,
+        userId,
+        Number(page),
+        Number(limit),
+      );
+      return sendSuccess(res, result.data, 200, {
+        page: Number(page),
+        limit: Number(limit),
+        total: result.count,
+        hasMore: result.hasMore,
+      });
+    } catch (err) {
+      return sendError(res, 500, "FETCH_ERROR", "Failed to fetch templates");
+    }
+  },
+);
 
 // ── POST /templates — Create a template ──────────────────────────────────────
 
@@ -71,28 +80,32 @@ router.post(
     } catch (err) {
       return sendError(res, 500, "CREATE_ERROR", "Failed to create template");
     }
-  }
+  },
 );
 
 // ── GET /templates/:id ────────────────────────────────────────────────────────
 
-router.get("/:id", validate({ params: z.object({ id: UUIDSchema }) }), async (req: AuthenticatedRequest, res: Response) => {
-  const userId = req.user!.userId;
-  const businessId = req.user!.businessId || userId;
-  const role = req.user!.role;
+router.get(
+  "/:id",
+  validate({ params: z.object({ id: UUIDSchema }) }),
+  async (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user!.userId;
+    const businessId = req.user!.businessId || userId;
+    const role = req.user!.role;
 
-  try {
-    const data = await templatesService.getTemplate(businessId, userId, role, req.params.id);
-    return sendSuccess(res, data);
-  } catch (err: any) {
-    return sendError(
-      res,
-      err.statusCode || 500,
-      err.code || "FETCH_ERROR",
-      err.message || "Failed to fetch template"
-    );
-  }
-});
+    try {
+      const data = await templatesService.getTemplate(businessId, userId, role, req.params.id);
+      return sendSuccess(res, data);
+    } catch (err: any) {
+      return sendError(
+        res,
+        err.statusCode || 500,
+        err.code || "FETCH_ERROR",
+        err.message || "Failed to fetch template",
+      );
+    }
+  },
+);
 
 // ── PATCH /templates/:id ──────────────────────────────────────────────────────
 
@@ -106,17 +119,23 @@ router.patch(
     const role = req.user!.role;
 
     try {
-      const data = await templatesService.updateTemplate(businessId, userId, role, req.params.id, req.body);
+      const data = await templatesService.updateTemplate(
+        businessId,
+        userId,
+        role,
+        req.params.id,
+        req.body,
+      );
       return sendSuccess(res, data);
     } catch (err: any) {
       return sendError(
         res,
         err.statusCode || 500,
         err.code || "UPDATE_ERROR",
-        err.message || "Failed to update template"
+        err.message || "Failed to update template",
       );
     }
-  }
+  },
 );
 
 // ── DELETE /templates/:id ─────────────────────────────────────────────────────
@@ -137,10 +156,10 @@ router.delete(
         res,
         err.statusCode || 500,
         err.code || "DELETE_ERROR",
-        err.message || "Failed to delete template"
+        err.message || "Failed to delete template",
       );
     }
-  }
+  },
 );
 
 import { templatesService } from "./templates.service.js";

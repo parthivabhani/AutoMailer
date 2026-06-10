@@ -27,11 +27,8 @@ export class SenderRepository extends BaseRepository<Profile> {
    */
   async getCsvFilesByIds(csvIds: string[]) {
     if (csvIds.length === 0) return [];
-    
-    const { data, error } = await getSupabase()
-      .from("csv_files")
-      .select("*")
-      .in("id", csvIds);
+
+    const { data, error } = await getSupabase().from("csv_files").select("*").in("id", csvIds);
 
     if (error) throw error;
     return data || [];
@@ -42,7 +39,7 @@ export class SenderRepository extends BaseRepository<Profile> {
    */
   async getSegments(csvId: string, assignedSegmentIds: string[]) {
     let query = getSupabase().from("segments").select("*").eq("csv_id", csvId);
-    
+
     if (assignedSegmentIds.length > 0) {
       query = query.in("id", assignedSegmentIds);
     }

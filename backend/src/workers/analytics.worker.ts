@@ -92,7 +92,7 @@ async function aggregateDaily(businessId: string, date: string): Promise<void> {
         ai_cost_usd: aiCostUsd.toFixed(4),
         active_senders: activeSenders,
       },
-      { onConflict: "business_id, snapshot_date, period" }
+      { onConflict: "business_id, snapshot_date, period" },
     );
 
   workerLogger.debug({ businessId, date, snapshot }, "Daily analytics snapshot updated");
@@ -118,13 +118,11 @@ async function processAnalyticsJob(job: Job<AnalyticsJobData>): Promise<void> {
         .eq("status", "active");
 
       const allBusinesses = businesses || [];
-      await Promise.allSettled(
-        allBusinesses.map((b) => aggregateDaily(b.id, targetDate))
-      );
+      await Promise.allSettled(allBusinesses.map((b) => aggregateDaily(b.id, targetDate)));
 
       workerLogger.info(
         { count: allBusinesses.length, date: targetDate },
-        "Platform-wide analytics aggregation complete"
+        "Platform-wide analytics aggregation complete",
       );
     }
   }
@@ -146,7 +144,7 @@ export function startAnalyticsWorker(): Worker {
     {
       connection: createBullMQConnection(),
       concurrency: 1, // Singleton — prevents concurrent aggregations
-    }
+    },
   );
 
   _analyticsWorker.on("completed", (job) => {

@@ -18,7 +18,7 @@ export class AppError extends Error {
     message: string,
     statusCode: number = 500,
     code: string = "INTERNAL_ERROR",
-    details?: unknown
+    details?: unknown,
   ) {
     super(message);
     this.name = this.constructor.name;
@@ -68,22 +68,15 @@ export class ForbiddenError extends AppError {
 
 export class InsufficientPermissionsError extends AppError {
   constructor(permission: string) {
-    super(
-      `Insufficient permissions: requires '${permission}'`,
-      403,
-      "INSUFFICIENT_PERMISSIONS",
-      { required: permission }
-    );
+    super(`Insufficient permissions: requires '${permission}'`, 403, "INSUFFICIENT_PERMISSIONS", {
+      required: permission,
+    });
   }
 }
 
 export class TenantIsolationError extends AppError {
   constructor() {
-    super(
-      "Cross-tenant access denied",
-      403,
-      "TENANT_ISOLATION_VIOLATION"
-    );
+    super("Cross-tenant access denied", 403, "TENANT_ISOLATION_VIOLATION");
   }
 }
 
@@ -95,7 +88,7 @@ export class NotFoundError extends AppError {
       id ? `${resource} with ID '${id}' not found` : `${resource} not found`,
       404,
       "NOT_FOUND",
-      { resource, id }
+      { resource, id },
     );
   }
 }
@@ -132,7 +125,7 @@ export class PlanLimitError extends AppError {
       `Plan limit reached for ${limit}. Current: ${current}, Limit: ${max}. Please upgrade your plan.`,
       402,
       "PLAN_LIMIT_EXCEEDED",
-      { limit, current, max }
+      { limit, current, max },
     );
   }
 }
@@ -152,7 +145,7 @@ export class SMTPNotConfiguredError extends AppError {
     super(
       "SMTP is not configured for this account. Please configure SMTP before sending campaigns.",
       400,
-      "SMTP_NOT_CONFIGURED"
+      "SMTP_NOT_CONFIGURED",
     );
   }
 }
@@ -162,7 +155,7 @@ export class CampaignAlreadySendingError extends AppError {
     super(
       `Campaign '${campaignId}' is already sending. Pause it first to make changes.`,
       409,
-      "CAMPAIGN_ALREADY_SENDING"
+      "CAMPAIGN_ALREADY_SENDING",
     );
   }
 }
@@ -187,7 +180,7 @@ export class DeduplicationError extends AppError {
       }.`,
       409,
       "DEDUP_COOLDOWN",
-      { email, cooldownUntil }
+      { email, cooldownUntil },
     );
   }
 }

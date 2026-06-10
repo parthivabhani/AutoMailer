@@ -46,10 +46,7 @@ export class ContactsRepository extends BaseRepository<Contact> {
    * Retrieves segments by CSV ID.
    */
   async getSegments(csvId: string) {
-    const { data, error } = await getSupabase()
-      .from("segments")
-      .select("*")
-      .eq("csv_id", csvId);
+    const { data, error } = await getSupabase().from("segments").select("*").eq("csv_id", csvId);
 
     if (error) throw error;
     return data || [];
@@ -72,10 +69,7 @@ export class ContactsRepository extends BaseRepository<Contact> {
    * Deletes all segments associated with a CSV file.
    */
   async deleteSegments(csvId: string): Promise<void> {
-    const { error } = await getSupabase()
-      .from("segments")
-      .delete()
-      .eq("csv_id", csvId);
+    const { error } = await getSupabase().from("segments").delete().eq("csv_id", csvId);
 
     if (error) throw error;
   }
@@ -132,7 +126,7 @@ export class ContactsRepository extends BaseRepository<Contact> {
    */
   async bulkUpsertContacts(contacts: any[]): Promise<void> {
     if (contacts.length === 0) return;
-    
+
     // Using Supabase Admin client to write contact records safely
     const { error } = await getSupabaseAdmin()
       .from("contacts")

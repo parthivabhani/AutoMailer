@@ -19,24 +19,18 @@ interface BounceJobPayload {
 /**
  * Enqueues a bounce event for background processing.
  */
-export async function enqueueBounceEvent(
-  payload: BounceJobPayload
-): Promise<string> {
+export async function enqueueBounceEvent(payload: BounceJobPayload): Promise<string> {
   const queue = getBounceQueue();
   const jobId = `bounce:${payload.recipientEmail}:${Date.now()}`;
 
-  const job = await queue.add(
-    "process_bounce",
-    payload,
-    {
-      jobId,
-      removeOnComplete: { age: 7 * 24 * 3600 },
-    }
-  );
+  const job = await queue.add("process_bounce", payload, {
+    jobId,
+    removeOnComplete: { age: 7 * 24 * 3600 },
+  });
 
   logger.warn(
     { jobId: job.id, recipientEmail: payload.recipientEmail, type: payload.bounceType },
-    "Bounce event queued for processing"
+    "Bounce event queued for processing",
   );
 
   return job.id!;

@@ -29,9 +29,7 @@ export function requireTenant(req: Request, res: Response, next: NextFunction): 
   }
 
   if (!authReq.user.businessId) {
-    return next(
-      new TenantIsolationError()
-    );
+    return next(new TenantIsolationError());
   }
 
   next();
@@ -45,7 +43,7 @@ export function requireTenant(req: Request, res: Response, next: NextFunction): 
  */
 export function assertTenantOwnership(
   resourceBusinessId: string | undefined,
-  requestingBusinessId: string | undefined
+  requestingBusinessId: string | undefined,
 ): void {
   if (!resourceBusinessId || !requestingBusinessId) {
     throw new TenantIsolationError();
@@ -61,7 +59,7 @@ export function assertTenantOwnership(
  */
 export function assertSenderBelongsToAdmin(
   senderAdminId: string | null,
-  requestingAdminId: string
+  requestingAdminId: string,
 ): void {
   if (senderAdminId !== requestingAdminId) {
     throw new ForbiddenError("Sender does not belong to your organization.");

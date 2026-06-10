@@ -21,7 +21,8 @@ interface DispatchCampaignInput {
 }
 
 export async function sendEmailCampaign(input: DispatchCampaignInput) {
-  const { senderId, adminId, csvId, segmentId, subjectTemplate, bodyTemplate, recipientIds } = input;
+  const { senderId, adminId, csvId, segmentId, subjectTemplate, bodyTemplate, recipientIds } =
+    input;
 
   // 1. Fetch parent Admin's SMTP config
   const { data: smtpConfig, error: smtpErr } = await supabase
@@ -66,8 +67,8 @@ export async function sendEmailCampaign(input: DispatchCampaignInput) {
     service: "gmail",
     auth: {
       user: smtpConfig.gmail,
-      pass: decryptedPassword
-    }
+      pass: decryptedPassword,
+    },
   });
 
   let sentCount = 0;
@@ -76,7 +77,12 @@ export async function sendEmailCampaign(input: DispatchCampaignInput) {
   // 5. Sequentially send emails to prevent spam flags
   for (const recipient of targetedRecipients) {
     const recipientEmail = (recipient.email || recipient.Email || "").trim();
-    const recipientName = (recipient.name || recipient.Name || recipient.FirstName || "there").trim();
+    const recipientName = (
+      recipient.name ||
+      recipient.Name ||
+      recipient.FirstName ||
+      "there"
+    ).trim();
 
     if (!recipientEmail) {
       // Log missing email failure
@@ -89,7 +95,7 @@ export async function sendEmailCampaign(input: DispatchCampaignInput) {
         subject: subjectTemplate,
         body: bodyTemplate,
         status: "failed",
-        error_message: "Missing recipient email address."
+        error_message: "Missing recipient email address.",
       });
       continue;
     }
@@ -123,7 +129,7 @@ export async function sendEmailCampaign(input: DispatchCampaignInput) {
         subject: subjectTemplate,
         body: bodyTemplate,
         status: "skipped_duplicate",
-        error_message: "Recipient already contacted in a previous campaign."
+        error_message: "Recipient already contacted in a previous campaign.",
       });
       continue;
     }
@@ -150,7 +156,7 @@ export async function sendEmailCampaign(input: DispatchCampaignInput) {
         from: `"${smtpConfig.gmail}" <${smtpConfig.gmail}>`,
         to: recipientEmail,
         subject: subject,
-        text: body
+        text: body,
       });
 
       // 9. Log successful dispatch in Supabase
@@ -162,7 +168,7 @@ export async function sendEmailCampaign(input: DispatchCampaignInput) {
         recipient_name: recipientName,
         subject: subject,
         body: body,
-        status: "sent"
+        status: "sent",
       });
 
       sentCount++;
@@ -171,7 +177,7 @@ export async function sendEmailCampaign(input: DispatchCampaignInput) {
       await new Promise((r) => setTimeout(r, 200 + Math.random() * 300));
     } catch (sendErr: any) {
       console.error(`SMTP Sending Error for ${recipientEmail}:`, sendErr);
-      
+
       // Log failed dispatch in Supabase
       await supabase.from("email_logs").insert({
         sender_id: senderId,
@@ -182,13 +188,13 @@ export async function sendEmailCampaign(input: DispatchCampaignInput) {
         subject: subject,
         body: body,
         status: "failed",
-        error_message: sendErr.message || "Failed to route through Google SMTP."
+        error_message: sendErr.message || "Failed to route through Google SMTP.",
       });
     }
   }
 
   return {
     sent: sentCount,
-    skippedDuplicates: duplicateEmails
+    skippedDuplicates: duplicateEmails,
   };
 }

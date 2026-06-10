@@ -25,14 +25,13 @@ interface PaginateOptions {
  */
 export async function paginate<T>(
   queryBuilder: any,
-  options: PaginateOptions = {}
+  options: PaginateOptions = {},
 ): Promise<PaginatedResult<T>> {
   const page = Math.max(1, Number(options.page || 1));
   const limit = Math.max(1, Math.min(100, Number(options.limit || 20)));
   const offset = (page - 1) * limit;
 
-  const { data, count, error } = await queryBuilder
-    .range(offset, offset + limit - 1);
+  const { data, count, error } = await queryBuilder.range(offset, offset + limit - 1);
 
   if (error) {
     throw error;

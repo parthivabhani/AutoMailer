@@ -60,10 +60,10 @@ router.post(
         res,
         err.statusCode || 500,
         err.code || "CREATE_ERROR",
-        err.message || "Failed to create sender account."
+        err.message || "Failed to create sender account.",
       );
     }
-  }
+  },
 );
 
 // DELETE /admin/senders/:id
@@ -79,26 +79,22 @@ router.delete("/senders/:id", async (req: AuthenticatedRequest, res: Response) =
       res,
       err.statusCode || 500,
       err.code || "DELETE_ERROR",
-      err.message || "Failed to delete sender account."
+      err.message || "Failed to delete sender account.",
     );
   }
 });
 
 // GET /admin/logs
-router.get(
-  "/logs",
-  validate(LogQuerySchema),
-  async (req: AuthenticatedRequest, res: Response) => {
-    const adminId = req.user!.userId;
+router.get("/logs", validate(LogQuerySchema), async (req: AuthenticatedRequest, res: Response) => {
+  const adminId = req.user!.userId;
 
-    try {
-      const logs = await adminService.getLogs(adminId, req.query);
-      return sendSuccess(res, logs);
-    } catch (err: any) {
-      return sendError(res, 500, "FETCH_ERROR", err.message || "Failed to retrieve email logs.");
-    }
+  try {
+    const logs = await adminService.getLogs(adminId, req.query);
+    return sendSuccess(res, logs);
+  } catch (err: any) {
+    return sendError(res, 500, "FETCH_ERROR", err.message || "Failed to retrieve email logs.");
   }
-);
+});
 
 // POST /admin/smtp
 router.post(
@@ -112,9 +108,14 @@ router.post(
       const result = await adminService.setSmtpConfig(adminId, gmail, appPassword);
       return sendSuccess(res, result);
     } catch (err: any) {
-      return sendError(res, 500, "SMTP_ERROR", err.message || "Failed to configure SMTP credentials.");
+      return sendError(
+        res,
+        500,
+        "SMTP_ERROR",
+        err.message || "Failed to configure SMTP credentials.",
+      );
     }
-  }
+  },
 );
 
 export default router;

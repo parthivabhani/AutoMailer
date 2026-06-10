@@ -21,11 +21,16 @@ function fallbackGenerate(brief: string, recipient: any): string {
 function fallbackHumanize(body: string): string {
   return body.replace(/\b(utilize|leverage|synergy|optimize|disrupt|paradigm shift)\b/gi, (m) => {
     switch (m.toLowerCase()) {
-      case "utilize": return "use";
-      case "leverage": return "use";
-      case "synergy": return "teamwork";
-      case "optimize": return "improve";
-      default: return "help";
+      case "utilize":
+        return "use";
+      case "leverage":
+        return "use";
+      case "synergy":
+        return "teamwork";
+      case "optimize":
+        return "improve";
+      default:
+        return "help";
     }
   });
 }
@@ -37,7 +42,7 @@ function fallbackSubjects(body: string): string[] {
     `Question about your team`,
     `Following up regarding ${snippet}`,
     `Simple thought for you`,
-    `Worth 5 minutes?`
+    `Worth 5 minutes?`,
   ];
 }
 
@@ -77,7 +82,7 @@ Rules:
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.1-8b-instant",
       temperature: 0.7,
-      max_tokens: 250
+      max_tokens: 250,
     });
 
     const emailBody = chatCompletion.choices[0]?.message?.content?.trim() || "";
@@ -120,7 +125,7 @@ ${body}
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.1-8b-instant",
       temperature: 0.5,
-      max_tokens: 300
+      max_tokens: 300,
     });
 
     const humanizedBody = chatCompletion.choices[0]?.message?.content?.trim() || "";
@@ -161,7 +166,7 @@ ${body}
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.1-8b-instant",
       temperature: 0.8,
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
     });
 
     const content = chatCompletion.choices[0]?.message?.content || "";

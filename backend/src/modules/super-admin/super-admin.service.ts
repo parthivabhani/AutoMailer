@@ -44,13 +44,29 @@ export class SuperAdminService {
    */
   async getStats() {
     const stats = await superAdminRepository.getPlatformStats();
-    
+
     // Construct aggregated monthly volume trend charts for the dashboard
     const monthlyVolume = [
-      { name: "Jan", sent: Math.round(stats.emailsSent * 0.15), failed: Math.round(stats.emailsFailed * 0.15) },
-      { name: "Feb", sent: Math.round(stats.emailsSent * 0.20), failed: Math.round(stats.emailsFailed * 0.20) },
-      { name: "Mar", sent: Math.round(stats.emailsSent * 0.25), failed: Math.round(stats.emailsFailed * 0.25) },
-      { name: "Apr", sent: Math.round(stats.emailsSent * 0.40), failed: Math.round(stats.emailsFailed * 0.40) },
+      {
+        name: "Jan",
+        sent: Math.round(stats.emailsSent * 0.15),
+        failed: Math.round(stats.emailsFailed * 0.15),
+      },
+      {
+        name: "Feb",
+        sent: Math.round(stats.emailsSent * 0.2),
+        failed: Math.round(stats.emailsFailed * 0.2),
+      },
+      {
+        name: "Mar",
+        sent: Math.round(stats.emailsSent * 0.25),
+        failed: Math.round(stats.emailsFailed * 0.25),
+      },
+      {
+        name: "Apr",
+        sent: Math.round(stats.emailsSent * 0.4),
+        failed: Math.round(stats.emailsFailed * 0.4),
+      },
     ];
 
     return {

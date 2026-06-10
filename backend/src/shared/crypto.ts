@@ -113,11 +113,7 @@ export function createHmacSignature(payload: string, secret: string): string {
 /**
  * Verifies an HMAC-SHA256 webhook signature.
  */
-export function verifyHmacSignature(
-  payload: string,
-  signature: string,
-  secret: string
-): boolean {
+export function verifyHmacSignature(payload: string, signature: string, secret: string): boolean {
   const expected = createHmacSignature(payload, secret);
   return safeCompare(expected, signature);
 }

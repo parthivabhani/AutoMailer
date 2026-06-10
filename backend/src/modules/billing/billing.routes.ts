@@ -24,7 +24,10 @@ router.use((req: Request, res: Response, next: NextFunction) => {
   if (!getEnv().FEATURE_BILLING_ENABLED) {
     res.status(503).json({
       success: false,
-      error: { code: "FEATURE_DISABLED", message: "Billing features are not enabled on this instance." }
+      error: {
+        code: "FEATURE_DISABLED",
+        message: "Billing features are not enabled on this instance.",
+      },
     });
     return;
   }
@@ -35,43 +38,47 @@ router.use(requireAuth);
 
 // ── GET /billing/subscription — Current plan details ─────────────────────────
 
-router.get("/subscription", requireRole(["admin"]), async (req: AuthenticatedRequest, res: Response) => {
-  const adminId = req.user!.userId;
-  const businessId = req.user!.businessId || adminId;
+router.get(
+  "/subscription",
+  requireRole(["admin"]),
+  async (req: AuthenticatedRequest, res: Response) => {
+    const adminId = req.user!.userId;
+    const businessId = req.user!.businessId || adminId;
 
-  try {
-    const { data, error } = await getSupabase()
-      .from("subscriptions")
-      .select("*")
-      .eq("business_id", businessId)
-      .single();
+    try {
+      const { data, error } = await getSupabase()
+        .from("subscriptions")
+        .select("*")
+        .eq("business_id", businessId)
+        .single();
 
-    if (error || !data) {
-      // Return free tier defaults if no subscription record
+      if (error || !data) {
+        // Return free tier defaults if no subscription record
+        return sendSuccess(res, {
+          plan: "free",
+          status: "active",
+          emailsUsed: 0,
+          emailsLimit: 500,
+          aiTokensUsed: 0,
+          aiTokensLimit: 10_000,
+        });
+      }
+
       return sendSuccess(res, {
-        plan: "free",
-        status: "active",
-        emailsUsed: 0,
-        emailsLimit: 500,
-        aiTokensUsed: 0,
-        aiTokensLimit: 10_000,
+        id: data.id,
+        plan: data.plan,
+        status: data.status,
+        currentPeriodEnd: data.current_period_end,
+        emailsUsed: data.emails_used,
+        emailsLimit: data.emails_limit,
+        aiTokensUsed: data.ai_tokens_used,
+        aiTokensLimit: data.ai_tokens_limit,
       });
+    } catch (err) {
+      return sendError(res, 500, "BILLING_ERROR", "Failed to fetch subscription");
     }
-
-    return sendSuccess(res, {
-      id: data.id,
-      plan: data.plan,
-      status: data.status,
-      currentPeriodEnd: data.current_period_end,
-      emailsUsed: data.emails_used,
-      emailsLimit: data.emails_limit,
-      aiTokensUsed: data.ai_tokens_used,
-      aiTokensLimit: data.ai_tokens_limit,
-    });
-  } catch (err) {
-    return sendError(res, 500, "BILLING_ERROR", "Failed to fetch subscription");
-  }
-});
+  },
+);
 
 // ── GET /billing/history — Invoice history ────────────────────────────────────
 
@@ -126,7 +133,7 @@ router.post(
     } catch (err) {
       return sendError(res, 500, "STRIPE_ERROR", "Failed to create checkout session");
     }
-  }
+  },
 );
 
 // ── POST /billing/webhook — Stripe webhook handler ────────────────────────────
@@ -189,7 +196,7 @@ router.get(
     } catch (err) {
       return sendError(res, 500, "BILLING_ERROR", "Failed to fetch revenue metrics");
     }
-  }
+  },
 );
 
 export default router;

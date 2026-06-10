@@ -57,11 +57,11 @@ router.get("/assigned", async (req: AuthenticatedRequest, res: Response) => {
           segments: (segments || []).map((s) => ({
             id: s.id,
             label: s.label,
-            rowIds: s.row_ids
+            rowIds: s.row_ids,
           })),
-          assignedSenderIds: [senderId] // Kept for frontend representation compatibility
+          assignedSenderIds: [senderId], // Kept for frontend representation compatibility
         };
-      })
+      }),
     );
 
     return res.json(formattedCSVs);
@@ -78,11 +78,15 @@ router.post("/send", async (req: AuthenticatedRequest, res: Response) => {
   const { csvId, segmentId, subject, body, recipientIds } = req.body;
 
   if (!adminId) {
-    return res.status(400).json({ error: "Sender profile is missing linking to a parent admin account." });
+    return res
+      .status(400)
+      .json({ error: "Sender profile is missing linking to a parent admin account." });
   }
 
   if (!csvId || !subject || !body || !recipientIds || !Array.isArray(recipientIds)) {
-    return res.status(400).json({ error: "Missing required fields: csvId, subject, body, recipientIds." });
+    return res
+      .status(400)
+      .json({ error: "Missing required fields: csvId, subject, body, recipientIds." });
   }
 
   try {
@@ -93,7 +97,7 @@ router.post("/send", async (req: AuthenticatedRequest, res: Response) => {
       segmentId,
       subjectTemplate: subject,
       bodyTemplate: body,
-      recipientIds
+      recipientIds,
     });
 
     return res.json(results);

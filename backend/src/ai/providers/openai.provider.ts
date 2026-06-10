@@ -8,7 +8,13 @@
  */
 
 import { BaseAIProvider } from "../ai.provider.js";
-import type { AIResult, GenerateEmailParams, HumanizeEmailParams, GenerateSubjectsParams, SegmentContactsParams } from "../../shared/types.js";
+import type {
+  AIResult,
+  GenerateEmailParams,
+  HumanizeEmailParams,
+  GenerateSubjectsParams,
+  SegmentContactsParams,
+} from "../../shared/types.js";
 import { getEnv } from "../../config/env.js";
 import { logger } from "../../shared/logger.js";
 import {
@@ -42,9 +48,7 @@ export class OpenAIProvider extends BaseAIProvider {
       this._client = new OpenAI({ apiKey });
       return this._client;
     } catch {
-      throw new Error(
-        'OpenAI package not installed. Run: npm install openai'
-      );
+      throw new Error("OpenAI package not installed. Run: npm install openai");
     }
   }
 
@@ -71,7 +75,7 @@ export class OpenAIProvider extends BaseAIProvider {
         content,
         this.DEFAULT_MODEL,
         usage?.prompt_tokens ?? 0,
-        usage?.completion_tokens ?? 0
+        usage?.completion_tokens ?? 0,
       );
     } catch (err) {
       logger.error({ err, provider: this.name }, "OpenAI generateEmail failed");
@@ -98,7 +102,7 @@ export class OpenAIProvider extends BaseAIProvider {
         content,
         this.DEFAULT_MODEL,
         usage?.prompt_tokens ?? 0,
-        usage?.completion_tokens ?? 0
+        usage?.completion_tokens ?? 0,
       );
     } catch (err) {
       logger.error({ err, provider: this.name }, "OpenAI humanizeEmail failed");
@@ -127,7 +131,7 @@ export class OpenAIProvider extends BaseAIProvider {
         Array.isArray(subjects) ? subjects : [],
         this.DEFAULT_MODEL,
         response.usage?.prompt_tokens ?? 0,
-        response.usage?.completion_tokens ?? 0
+        response.usage?.completion_tokens ?? 0,
       );
     } catch (err) {
       logger.error({ err, provider: this.name }, "OpenAI generateSubjects failed");
@@ -156,7 +160,7 @@ export class OpenAIProvider extends BaseAIProvider {
         JSON.stringify(segments),
         this.SMART_MODEL,
         response.usage?.prompt_tokens ?? 0,
-        response.usage?.completion_tokens ?? 0
+        response.usage?.completion_tokens ?? 0,
       );
     } catch (err) {
       logger.error({ err, provider: this.name }, "OpenAI segmentContacts failed");

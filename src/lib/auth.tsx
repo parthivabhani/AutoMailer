@@ -40,8 +40,20 @@ const Ctx = createContext<AuthCtx>({
  */
 const MOCK_USERS: AuthUser[] = [
   { id: "u_super", email: "super@demo.io", name: "Platform Owner", role: "super_admin" },
-  { id: "u_admin", email: "admin@demo.io", name: "Acme Marketing", role: "admin", smtpConfigured: false },
-  { id: "u_sender", email: "sender@demo.io", name: "Jamie Sender", role: "sender", adminId: "u_admin" },
+  {
+    id: "u_admin",
+    email: "admin@demo.io",
+    name: "Acme Marketing",
+    role: "admin",
+    smtpConfigured: false,
+  },
+  {
+    id: "u_sender",
+    email: "sender@demo.io",
+    name: "Jamie Sender",
+    role: "sender",
+    adminId: "u_admin",
+  },
 ];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -52,7 +64,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setUser(JSON.parse(raw));
-    } catch {}
+    } catch {
+      // Ignore reading storage errors on boot
+    }
     setLoading(false);
   }, []);
 

@@ -22,10 +22,7 @@ export abstract class BaseRepository<T> {
    * Initiates a select query scoped to the tenant's businessId.
    */
   protected scopeQuery(businessId: string, useAdmin: boolean = false) {
-    return this.getClient(useAdmin)
-      .from(this.tableName)
-      .select("*")
-      .eq("business_id", businessId);
+    return this.getClient(useAdmin).from(this.tableName).select("*").eq("business_id", businessId);
   }
 
   /**
@@ -96,11 +93,7 @@ export abstract class BaseRepository<T> {
   /**
    * Standard update helper, scoped to a specific business.
    */
-  async update(
-    id: string,
-    businessId: string,
-    updates: Partial<T>
-  ): Promise<T> {
+  async update(id: string, businessId: string, updates: Partial<T>): Promise<T> {
     const { data, error } = await this.getClient()
       .from(this.tableName)
       .update(updates as any)

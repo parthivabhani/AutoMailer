@@ -43,7 +43,7 @@ const server = app.listen(env.PORT, () => {
 ║  Redis   : ${(env.FEATURE_REDIS_ENABLED ? "Enabled" : "Disabled").padEnd(30)}║
 ║  AI      : ${env.AI_DEFAULT_PROVIDER.padEnd(30)}║
 ║  Billing : ${(env.FEATURE_BILLING_ENABLED ? "Enabled" : "Disabled").padEnd(30)}║
-╚══════════════════════════════════════════╝`
+╚══════════════════════════════════════════╝`,
   );
 });
 

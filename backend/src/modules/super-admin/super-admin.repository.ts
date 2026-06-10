@@ -52,8 +52,14 @@ export class SuperAdminRepository extends BaseRepository<Profile> {
     const [adminRes, sentRes, failRes, skipRes] = await Promise.all([
       supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "admin"),
       supabase.from("email_logs").select("*", { count: "exact", head: true }).eq("status", "sent"),
-      supabase.from("email_logs").select("*", { count: "exact", head: true }).eq("status", "failed"),
-      supabase.from("email_logs").select("*", { count: "exact", head: true }).eq("status", "skipped_duplicate"),
+      supabase
+        .from("email_logs")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "failed"),
+      supabase
+        .from("email_logs")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "skipped_duplicate"),
     ]);
 
     if (adminRes.error) throw adminRes.error;

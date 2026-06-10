@@ -35,23 +35,20 @@ interface EnqueueEmailOptions {
  */
 export async function enqueueEmail(
   data: EmailJobData,
-  options: EnqueueEmailOptions = {}
+  options: EnqueueEmailOptions = {},
 ): Promise<string> {
   const queue = getEmailQueue();
 
-  const jobId = options.deduplicationId || `email:${data.businessId}:${data.recipientEmail}:${Date.now()}`;
+  const jobId =
+    options.deduplicationId || `email:${data.businessId}:${data.recipientEmail}:${Date.now()}`;
   const delay = calculateDelay(options.scheduledFor, options.delayMs);
   const priority = data.priority ?? options.priority ?? VIP_PRIORITY.NORMAL;
 
-  const job = await queue.add(
-    data.jobType,
-    data,
-    {
-      jobId,
-      priority,
-      delay,
-    }
-  );
+  const job = await queue.add(data.jobType, data, {
+    jobId,
+    priority,
+    delay,
+  });
 
   logger.debug(
     {
@@ -61,7 +58,7 @@ export async function enqueueEmail(
       priority,
       delay,
     },
-    "Email job enqueued"
+    "Email job enqueued",
   );
 
   return job.id!;
@@ -86,7 +83,7 @@ export async function enqueueCampaignBatch(
   options: {
     baseDelayMs?: number;
     scheduledFor?: Date;
-  } = {}
+  } = {},
 ): Promise<{ jobIds: string[]; total: number }> {
   const queue = getEmailQueue();
   const { baseDelayMs = 0, scheduledFor } = options;
@@ -98,9 +95,7 @@ export async function enqueueCampaignBatch(
     return (b.vipScore ?? 0) - (a.vipScore ?? 0);
   });
 
-  const baseScheduleDelay = scheduledFor
-    ? Math.max(0, scheduledFor.getTime() - Date.now())
-    : 0;
+  const baseScheduleDelay = scheduledFor ? Math.max(0, scheduledFor.getTime() - Date.now()) : 0;
 
   // Build BullMQ bulk job array
   const bulkJobs = sorted.map((recipient, index) => {
@@ -139,7 +134,7 @@ export async function enqueueCampaignBatch(
       totalJobs: jobs.length,
       vipCount: sorted.filter((r) => r.isVip).length,
     },
-    "Campaign batch enqueued"
+    "Campaign batch enqueued",
   );
 
   return { jobIds, total: jobs.length };
@@ -154,7 +149,7 @@ export async function enqueueCampaignBatch(
 export async function scheduleEmailCampaign(
   campaignId: string,
   scheduledAt: Date,
-  timezone: string = "UTC"
+  timezone: string = "UTC",
 ): Promise<string> {
   const queue = getEmailScheduleQueue();
 
@@ -166,7 +161,7 @@ export async function scheduleEmailCampaign(
     {
       delay,
       jobId: `scheduled:${campaignId}`,
-    }
+    },
   );
 
   logger.info(
@@ -176,7 +171,7 @@ export async function scheduleEmailCampaign(
       delayMs: delay,
       jobId: job.id,
     },
-    "Campaign scheduled"
+    "Campaign scheduled",
   );
 
   return job.id!;

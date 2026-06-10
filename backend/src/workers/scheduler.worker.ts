@@ -74,12 +74,12 @@ async function launchScheduledCampaign(campaignId: string): Promise<void> {
       senderOverride: campaign.sender_override,
       // delayBetweenEmailsMs is used internally by enqueueCampaignBatch
       attachments: [],
-    } as any
+    } as any,
   );
 
   workerLogger.info(
     { campaignId, recipientCount: pendingJobs.length },
-    "Scheduled campaign launched"
+    "Scheduled campaign launched",
   );
 }
 
@@ -93,7 +93,7 @@ async function scheduleAnalyticsRollup(date: string): Promise<void> {
     {
       jobId: `analytics:daily:${date}`,
       removeOnComplete: { age: 7 * 24 * 3600 },
-    }
+    },
   );
   workerLogger.debug({ date }, "Analytics rollup scheduled");
 }
@@ -132,14 +132,10 @@ let _schedulerWorker: Worker | null = null;
 export function startSchedulerWorker(): Worker {
   if (_schedulerWorker) return _schedulerWorker;
 
-  _schedulerWorker = new Worker(
-    QUEUE_NAMES.SCHEDULER,
-    processSchedulerJob,
-    {
-      connection: createBullMQConnection(),
-      concurrency: 2,
-    }
-  );
+  _schedulerWorker = new Worker(QUEUE_NAMES.SCHEDULER, processSchedulerJob, {
+    connection: createBullMQConnection(),
+    concurrency: 2,
+  });
 
   _schedulerWorker.on("completed", (job) => {
     workerLogger.info({ jobId: job.id, jobName: job.name }, "Scheduler job completed");
@@ -164,8 +160,8 @@ export function startSchedulerWorker(): Worker {
  * These run on a fixed schedule regardless of individual campaigns.
  */
 async function scheduleRecurringJobs(): Promise<void> {
-  const schedulerQueue = await import("../queues/queue.registry.js").then(
-    (m) => m.getSchedulerQueue()
+  const schedulerQueue = await import("../queues/queue.registry.js").then((m) =>
+    m.getSchedulerQueue(),
   );
 
   // Daily analytics rollup at midnight UTC
@@ -177,7 +173,7 @@ async function scheduleRecurringJobs(): Promise<void> {
         pattern: "0 0 * * *", // Every day at midnight UTC (cron)
       },
       jobId: "recurring:analytics:daily",
-    }
+    },
   );
 
   workerLogger.info("Recurring jobs registered");

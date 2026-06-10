@@ -54,7 +54,12 @@ export function EmptyStateSimple({
   className?: string;
 }) {
   return (
-    <div className={cn("flex flex-col items-center justify-center p-12 text-center space-y-4", className)}>
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center p-12 text-center space-y-4",
+        className,
+      )}
+    >
       {Icon && (
         <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground">
           <Icon className="h-6 w-6" />

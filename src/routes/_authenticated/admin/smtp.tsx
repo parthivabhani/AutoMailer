@@ -30,11 +30,18 @@ function SMTPPage() {
       setAppPassword("");
     } catch (err) {
       toast.error((err as Error).message);
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <DashboardShell nav={adminNav} navTitle="Admin" title="SMTP Settings" subtitle="Manage your Gmail sending credentials">
+    <DashboardShell
+      nav={adminNav}
+      navTitle="Admin"
+      title="SMTP Settings"
+      subtitle="Manage your Gmail sending credentials"
+    >
       <div className="max-w-2xl space-y-4">
         <Card>
           <CardHeader>
@@ -53,20 +60,37 @@ function SMTPPage() {
           <CardHeader>
             <CardTitle className="text-base">Gmail + App Password</CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
-              Use a Google App Password — not your regular Gmail password. Credentials are sent over HTTPS and stored encrypted on the backend.
+              Use a Google App Password — not your regular Gmail password. Credentials are sent over
+              HTTPS and stored encrypted on the backend.
             </p>
           </CardHeader>
           <CardContent>
             <form onSubmit={onSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="g">Gmail address</Label>
-                <Input id="g" type="email" placeholder="you@gmail.com" value={gmail} onChange={(e) => setGmail(e.target.value)} required />
+                <Input
+                  id="g"
+                  type="email"
+                  placeholder="you@gmail.com"
+                  value={gmail}
+                  onChange={(e) => setGmail(e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="ap">App Password</Label>
-                <Input id="ap" type="password" placeholder="xxxx xxxx xxxx xxxx" value={appPassword} onChange={(e) => setAppPassword(e.target.value)} required />
+                <Input
+                  id="ap"
+                  type="password"
+                  placeholder="xxxx xxxx xxxx xxxx"
+                  value={appPassword}
+                  onChange={(e) => setAppPassword(e.target.value)}
+                  required
+                />
               </div>
-              <Button type="submit" disabled={busy}>{busy ? "Saving…" : "Save credentials"}</Button>
+              <Button type="submit" disabled={busy}>
+                {busy ? "Saving…" : "Save credentials"}
+              </Button>
             </form>
           </CardContent>
         </Card>

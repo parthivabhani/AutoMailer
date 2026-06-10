@@ -57,19 +57,24 @@ router.get(
           aiCostUsd: acc.aiCostUsd + parseFloat(s.ai_cost_usd || "0"),
         }),
         {
-          emailsSent: 0, emailsFailed: 0, emailsOpened: 0,
-          emailsClicked: 0, emailsReplied: 0, emailsBounced: 0,
-          aiTokensUsed: 0, aiCostUsd: 0,
-        }
+          emailsSent: 0,
+          emailsFailed: 0,
+          emailsOpened: 0,
+          emailsClicked: 0,
+          emailsReplied: 0,
+          emailsBounced: 0,
+          aiTokensUsed: 0,
+          aiCostUsd: 0,
+        },
       );
 
-      const deliveryRate = totals.emailsSent + totals.emailsFailed > 0
-        ? Math.round((totals.emailsSent / (totals.emailsSent + totals.emailsFailed)) * 100)
-        : 100;
+      const deliveryRate =
+        totals.emailsSent + totals.emailsFailed > 0
+          ? Math.round((totals.emailsSent / (totals.emailsSent + totals.emailsFailed)) * 100)
+          : 100;
 
-      const openRate = totals.emailsSent > 0
-        ? Math.round((totals.emailsOpened / totals.emailsSent) * 100)
-        : 0;
+      const openRate =
+        totals.emailsSent > 0 ? Math.round((totals.emailsOpened / totals.emailsSent) * 100) : 0;
 
       // Format time series for charts
       const timeSeries = rows.map((s) => ({
@@ -89,72 +94,68 @@ router.get(
     } catch (err) {
       return sendError(res, 500, "ANALYTICS_ERROR", "Failed to fetch analytics overview");
     }
-  }
+  },
 );
 
 // ── GET /analytics/senders — Per-sender productivity breakdown ────────────────
 
-router.get(
-  "/senders",
-  requireRole(["admin"]),
-  async (req: AuthenticatedRequest, res: Response) => {
-    const adminId = req.user!.userId;
+router.get("/senders", requireRole(["admin"]), async (req: AuthenticatedRequest, res: Response) => {
+  const adminId = req.user!.userId;
 
-    try {
-      // Get sender IDs under this admin
-      const { data: senders } = await getSupabase()
-        .from("profiles")
-        .select("id, name, email")
-        .eq("admin_id", adminId)
-        .eq("role", "sender");
+  try {
+    // Get sender IDs under this admin
+    const { data: senders } = await getSupabase()
+      .from("profiles")
+      .select("id, name, email")
+      .eq("admin_id", adminId)
+      .eq("role", "sender");
 
-      const senderIds = (senders || []).map((s) => s.id);
-      if (senderIds.length === 0) return sendSuccess(res, []);
+    const senderIds = (senders || []).map((s) => s.id);
+    if (senderIds.length === 0) return sendSuccess(res, []);
 
-      // Get email stats per sender
-      const senderStats = await Promise.all(
-        (senders || []).map(async (sender) => {
-          const [sentResult, failedResult, skippedResult] = await Promise.all([
-            getSupabase()
-              .from("email_logs")
-              .select("*", { count: "exact", head: true })
-              .eq("sender_id", sender.id)
-              .eq("status", "sent"),
-            getSupabase()
-              .from("email_logs")
-              .select("*", { count: "exact", head: true })
-              .eq("sender_id", sender.id)
-              .eq("status", "failed"),
-            getSupabase()
-              .from("email_logs")
-              .select("*", { count: "exact", head: true })
-              .eq("sender_id", sender.id)
-              .eq("status", "skipped_duplicate"),
-          ]);
+    // Get email stats per sender
+    const senderStats = await Promise.all(
+      (senders || []).map(async (sender) => {
+        const [sentResult, failedResult, skippedResult] = await Promise.all([
+          getSupabase()
+            .from("email_logs")
+            .select("*", { count: "exact", head: true })
+            .eq("sender_id", sender.id)
+            .eq("status", "sent"),
+          getSupabase()
+            .from("email_logs")
+            .select("*", { count: "exact", head: true })
+            .eq("sender_id", sender.id)
+            .eq("status", "failed"),
+          getSupabase()
+            .from("email_logs")
+            .select("*", { count: "exact", head: true })
+            .eq("sender_id", sender.id)
+            .eq("status", "skipped_duplicate"),
+        ]);
 
-          const sent = sentResult.count || 0;
-          const failed = failedResult.count || 0;
-          const skipped = skippedResult.count || 0;
-          const successRate = sent + failed > 0 ? Math.round((sent / (sent + failed)) * 100) : 100;
+        const sent = sentResult.count || 0;
+        const failed = failedResult.count || 0;
+        const skipped = skippedResult.count || 0;
+        const successRate = sent + failed > 0 ? Math.round((sent / (sent + failed)) * 100) : 100;
 
-          return {
-            id: sender.id,
-            name: sender.name,
-            email: sender.email,
-            emailsSent: sent,
-            emailsFailed: failed,
-            emailsSkipped: skipped,
-            successRate,
-          };
-        })
-      );
+        return {
+          id: sender.id,
+          name: sender.name,
+          email: sender.email,
+          emailsSent: sent,
+          emailsFailed: failed,
+          emailsSkipped: skipped,
+          successRate,
+        };
+      }),
+    );
 
-      return sendSuccess(res, senderStats);
-    } catch (err) {
-      return sendError(res, 500, "ANALYTICS_ERROR", "Failed to fetch sender analytics");
-    }
+    return sendSuccess(res, senderStats);
+  } catch (err) {
+    return sendError(res, 500, "ANALYTICS_ERROR", "Failed to fetch sender analytics");
   }
-);
+});
 
 // ── GET /analytics/ai-usage — AI token usage breakdown ───────────────────────
 
@@ -190,7 +191,7 @@ router.get(
           acc[key].requests += 1;
           return acc;
         },
-        {} as Record<string, { tokens: number; costUsd: number; requests: number }>
+        {} as Record<string, { tokens: number; costUsd: number; requests: number }>,
       );
 
       const totalTokens = Object.values(byProvider).reduce((s, p) => s + p.tokens, 0);
@@ -205,7 +206,7 @@ router.get(
     } catch (err) {
       return sendError(res, 500, "ANALYTICS_ERROR", "Failed to fetch AI usage analytics");
     }
-  }
+  },
 );
 
 export default router;

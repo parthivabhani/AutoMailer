@@ -56,9 +56,9 @@ export const QUEUE_NAMES = {
 } as const;
 
 export const QUEUE_CONCURRENCY = {
-  EMAIL_SEND: 5,           // Per worker instance
+  EMAIL_SEND: 5, // Per worker instance
   AI_GENERATE: 10,
-  ANALYTICS_AGGREGATE: 1,  // Singleton worker — prevents double aggregation
+  ANALYTICS_AGGREGATE: 1, // Singleton worker — prevents double aggregation
   BOUNCE_PROCESS: 3,
   WEBHOOK_PROCESS: 5,
   SCHEDULER: 2,
@@ -91,7 +91,7 @@ export const JOB_TTL_MS = 24 * 60 * 60 * 1_000; // Dead-letter jobs purged after
 export const RATE_LIMITS = {
   /** Global rate limit per IP */
   GLOBAL_PER_IP: {
-    windowMs: 60_000,     // 1 minute
+    windowMs: 60_000, // 1 minute
     max: 60,
   },
   /** Authenticated requests per tenant */
@@ -102,7 +102,7 @@ export const RATE_LIMITS = {
   /** Sender campaign dispatch */
   CAMPAIGN_SEND: {
     windowMs: 60_000,
-    max: 5,               // Max 5 campaign dispatches per minute per sender
+    max: 5, // Max 5 campaign dispatches per minute per sender
   },
   /** AI generation requests */
   AI_GENERATE: {
@@ -153,9 +153,7 @@ export const ATTACHMENT_CONFIG = {
     "image/png",
     "image/jpeg",
   ],
-  DANGEROUS_EXTENSIONS: [
-    ".exe", ".bat", ".cmd", ".sh", ".ps1", ".vbs", ".js", ".msi", ".dll",
-  ],
+  DANGEROUS_EXTENSIONS: [".exe", ".bat", ".cmd", ".sh", ".ps1", ".vbs", ".js", ".msi", ".dll"],
 } as const;
 
 // ── Analytics ────────────────────────────────────────────────────────────────

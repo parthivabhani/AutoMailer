@@ -28,7 +28,7 @@ router.get("/admins", async (req: AuthenticatedRequest, res: Response) => {
       role: a.role,
       status: a.status || "active",
       smtpConfigured: a.smtp_configured,
-      createdAt: a.created_at
+      createdAt: a.created_at,
     }));
 
     return res.json(formattedAdmins);
@@ -66,7 +66,7 @@ router.patch("/admins/:id/status", async (req: AuthenticatedRequest, res: Respon
       role: updatedProfile.role,
       status: updatedProfile.status,
       smtpConfigured: updatedProfile.smtp_configured,
-      createdAt: updatedProfile.created_at
+      createdAt: updatedProfile.created_at,
     });
   } catch (err) {
     console.error("Error in setAdminStatus:", err);
@@ -111,11 +111,27 @@ router.get("/stats", async (req: AuthenticatedRequest, res: Response) => {
       emailsSkipped: totalSkipped || 0,
       // Provide simple mock dashboard charts that adapt to real volumes
       monthlyVolume: [
-        { name: "Jan", sent: Math.round((totalSent || 0) * 0.15), failed: Math.round((totalFailed || 0) * 0.15) },
-        { name: "Feb", sent: Math.round((totalSent || 0) * 0.20), failed: Math.round((totalFailed || 0) * 0.20) },
-        { name: "Mar", sent: Math.round((totalSent || 0) * 0.25), failed: Math.round((totalFailed || 0) * 0.25) },
-        { name: "Apr", sent: Math.round((totalSent || 0) * 0.40), failed: Math.round((totalFailed || 0) * 0.40) }
-      ]
+        {
+          name: "Jan",
+          sent: Math.round((totalSent || 0) * 0.15),
+          failed: Math.round((totalFailed || 0) * 0.15),
+        },
+        {
+          name: "Feb",
+          sent: Math.round((totalSent || 0) * 0.2),
+          failed: Math.round((totalFailed || 0) * 0.2),
+        },
+        {
+          name: "Mar",
+          sent: Math.round((totalSent || 0) * 0.25),
+          failed: Math.round((totalFailed || 0) * 0.25),
+        },
+        {
+          name: "Apr",
+          sent: Math.round((totalSent || 0) * 0.4),
+          failed: Math.round((totalFailed || 0) * 0.4),
+        },
+      ],
     });
   } catch (err) {
     console.error("Error in super-admin stats:", err);

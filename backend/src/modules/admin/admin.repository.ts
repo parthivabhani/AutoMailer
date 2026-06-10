@@ -52,9 +52,21 @@ export class AdminRepository extends BaseRepository<Profile> {
 
     const supabase = getSupabase();
     const [sentRes, failRes, skipRes] = await Promise.all([
-      supabase.from("email_logs").select("id", { count: "exact", head: true }).in("sender_id", senderIds).eq("status", "sent"),
-      supabase.from("email_logs").select("id", { count: "exact", head: true }).in("sender_id", senderIds).eq("status", "failed"),
-      supabase.from("email_logs").select("id", { count: "exact", head: true }).in("sender_id", senderIds).eq("status", "skipped_duplicate"),
+      supabase
+        .from("email_logs")
+        .select("id", { count: "exact", head: true })
+        .in("sender_id", senderIds)
+        .eq("status", "sent"),
+      supabase
+        .from("email_logs")
+        .select("id", { count: "exact", head: true })
+        .in("sender_id", senderIds)
+        .eq("status", "failed"),
+      supabase
+        .from("email_logs")
+        .select("id", { count: "exact", head: true })
+        .in("sender_id", senderIds)
+        .eq("status", "skipped_duplicate"),
     ]);
 
     return {
@@ -68,16 +80,14 @@ export class AdminRepository extends BaseRepository<Profile> {
    * Registers a new SMTP credential configuration.
    */
   async upsertSmtpConfig(adminId: string, gmail: string, encryptedPass: string): Promise<void> {
-    const { error } = await getSupabase()
-      .from("smtp_configs")
-      .upsert(
-        {
-          admin_id: adminId,
-          gmail,
-          encrypted_password: encryptedPass,
-        },
-        { onConflict: "admin_id" }
-      );
+    const { error } = await getSupabase().from("smtp_configs").upsert(
+      {
+        admin_id: adminId,
+        gmail,
+        encrypted_password: encryptedPass,
+      },
+      { onConflict: "admin_id" },
+    );
 
     if (error) throw error;
   }
@@ -97,10 +107,7 @@ export class AdminRepository extends BaseRepository<Profile> {
   /**
    * Retrieves email logs filtered by sender IDs and date range.
    */
-  async getLogs(
-    senderIds: string[],
-    filters: { senderId?: string; from?: string; to?: string }
-  ) {
+  async getLogs(senderIds: string[], filters: { senderId?: string; from?: string; to?: string }) {
     const supabase = getSupabase();
     let query = supabase.from("email_logs").select("*").in("sender_id", senderIds);
 

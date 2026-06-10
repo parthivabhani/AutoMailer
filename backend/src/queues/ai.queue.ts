@@ -16,25 +16,21 @@ import { logger } from "../shared/logger.js";
  */
 export async function enqueueAITask(
   data: AIJobData,
-  options: { delayMs?: number; priority?: number } = {}
+  options: { delayMs?: number; priority?: number } = {},
 ): Promise<string> {
   const queue = getAIQueue();
 
   const jobId = `ai:${data.businessId}:${data.operation}:${Date.now()}`;
-  const job = await queue.add(
-    data.operation,
-    data,
-    {
-      jobId,
-      delay: options.delayMs || 0,
-      priority: options.priority || 0,
-      removeOnComplete: { age: 24 * 3600 },
-    }
-  );
+  const job = await queue.add(data.operation, data, {
+    jobId,
+    delay: options.delayMs || 0,
+    priority: options.priority || 0,
+    removeOnComplete: { age: 24 * 3600 },
+  });
 
   logger.debug(
     { jobId: job.id, operation: data.operation, businessId: data.businessId },
-    "AI background task enqueued"
+    "AI background task enqueued",
   );
 
   return job.id!;

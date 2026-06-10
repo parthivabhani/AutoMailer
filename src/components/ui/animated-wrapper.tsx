@@ -1,6 +1,14 @@
 import { cn } from "@/lib/utils";
 
-export function FadeIn({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+export function FadeIn({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
   return (
     <div
       className={cn("animate-in fade-in duration-500", className)}
@@ -11,9 +19,14 @@ export function FadeIn({ children, className, delay = 0 }: { children: React.Rea
   );
 }
 
-export function SlideIn({ children, className, direction = "up", delay = 0 }: { 
-  children: React.ReactNode; 
-  className?: string; 
+export function SlideIn({
+  children,
+  className,
+  direction = "up",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
   direction?: "up" | "down" | "left" | "right";
   delay?: number;
 }) {
@@ -34,7 +47,15 @@ export function SlideIn({ children, className, direction = "up", delay = 0 }: {
   );
 }
 
-export function ScaleIn({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+export function ScaleIn({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
   return (
     <div
       className={cn("animate-in zoom-in duration-300", className)}
@@ -46,25 +67,13 @@ export function ScaleIn({ children, className, delay = 0 }: { children: React.Re
 }
 
 export function Pulse({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={cn("animate-pulse", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("animate-pulse", className)}>{children}</div>;
 }
 
 export function Bounce({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={cn("animate-bounce", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("animate-bounce", className)}>{children}</div>;
 }
 
 export function Spin({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={cn("animate-spin", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("animate-spin", className)}>{children}</div>;
 }

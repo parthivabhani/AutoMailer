@@ -12,7 +12,11 @@ export class CampaignRepository extends BaseRepository<Campaign> {
   /**
    * Lists campaigns scoped to an administrator.
    */
-  async listCampaigns(adminId: string, limit: number, offset: number): Promise<{ data: Campaign[]; count: number }> {
+  async listCampaigns(
+    adminId: string,
+    limit: number,
+    offset: number,
+  ): Promise<{ data: Campaign[]; count: number }> {
     const { data, count, error } = await getSupabase()
       .from("campaigns")
       .select("*", { count: "exact" })

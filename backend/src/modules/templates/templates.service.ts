@@ -12,7 +12,12 @@ export class TemplatesService {
    */
   async getTemplates(businessId: string, userId: string, page: number, limit: number) {
     const offset = (page - 1) * limit;
-    const { data, count } = await templatesRepository.listTemplates(businessId, userId, limit, offset);
+    const { data, count } = await templatesRepository.listTemplates(
+      businessId,
+      userId,
+      limit,
+      offset,
+    );
     return {
       data,
       count,
@@ -57,7 +62,13 @@ export class TemplatesService {
   /**
    * Updates a template.
    */
-  async updateTemplate(businessId: string, userId: string, role: string, templateId: string, payload: any) {
+  async updateTemplate(
+    businessId: string,
+    userId: string,
+    role: string,
+    templateId: string,
+    payload: any,
+  ) {
     const existing = await templatesRepository.findById(templateId, businessId);
     if (!existing) {
       throw new NotFoundError("Template");

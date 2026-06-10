@@ -8,7 +8,13 @@
  */
 
 import { BaseAIProvider } from "../ai.provider.js";
-import type { AIResult, GenerateEmailParams, HumanizeEmailParams, GenerateSubjectsParams, SegmentContactsParams } from "../../shared/types.js";
+import type {
+  AIResult,
+  GenerateEmailParams,
+  HumanizeEmailParams,
+  GenerateSubjectsParams,
+  SegmentContactsParams,
+} from "../../shared/types.js";
 import { getEnv } from "../../config/env.js";
 import { logger } from "../../shared/logger.js";
 import {
@@ -41,9 +47,7 @@ export class ClaudeProvider extends BaseAIProvider {
       this._client = new Anthropic.default({ apiKey });
       return this._client;
     } catch {
-      throw new Error(
-        'Anthropic SDK not installed. Run: npm install @anthropic-ai/sdk'
-      );
+      throw new Error("Anthropic SDK not installed. Run: npm install @anthropic-ai/sdk");
     }
   }
 
@@ -62,15 +66,13 @@ export class ClaudeProvider extends BaseAIProvider {
         messages: [{ role: "user", content: prompt }],
       });
 
-      const content = response.content[0]?.type === "text"
-        ? response.content[0].text.trim()
-        : "";
+      const content = response.content[0]?.type === "text" ? response.content[0].text.trim() : "";
 
       return this.buildResult(
         content,
         this.DEFAULT_MODEL,
         response.usage.input_tokens,
-        response.usage.output_tokens
+        response.usage.output_tokens,
       );
     } catch (err) {
       logger.error({ err, provider: this.name }, "Claude generateEmail failed");
@@ -89,15 +91,14 @@ export class ClaudeProvider extends BaseAIProvider {
         messages: [{ role: "user", content: prompt }],
       });
 
-      const content = response.content[0]?.type === "text"
-        ? response.content[0].text.trim()
-        : params.body;
+      const content =
+        response.content[0]?.type === "text" ? response.content[0].text.trim() : params.body;
 
       return this.buildResult(
         content,
         this.DEFAULT_MODEL,
         response.usage.input_tokens,
-        response.usage.output_tokens
+        response.usage.output_tokens,
       );
     } catch (err) {
       logger.error({ err, provider: this.name }, "Claude humanizeEmail failed");
@@ -124,14 +125,17 @@ export class ClaudeProvider extends BaseAIProvider {
         subjects = parsed.subjects || parsed.suggestions || parsed;
       } catch {
         // If not JSON, split by newlines
-        subjects = rawContent.split("\n").filter(Boolean).slice(0, params.count || 5);
+        subjects = rawContent
+          .split("\n")
+          .filter(Boolean)
+          .slice(0, params.count || 5);
       }
 
       return this.buildResult(
         Array.isArray(subjects) ? subjects : [],
         this.DEFAULT_MODEL,
         response.usage.input_tokens,
-        response.usage.output_tokens
+        response.usage.output_tokens,
       );
     } catch (err) {
       logger.error({ err, provider: this.name }, "Claude generateSubjects failed");
@@ -159,7 +163,7 @@ export class ClaudeProvider extends BaseAIProvider {
         JSON.stringify(segments),
         this.SMART_MODEL,
         response.usage.input_tokens,
-        response.usage.output_tokens
+        response.usage.output_tokens,
       );
     } catch (err) {
       logger.error({ err, provider: this.name }, "Claude segmentContacts failed");

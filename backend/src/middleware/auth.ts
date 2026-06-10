@@ -55,15 +55,13 @@ function invalidateProfileCache(userId: string): void {
 
 // ── Main Auth Middleware ───────────────────────────────────────────────────────
 
-export async function requireAuth(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
+export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    return next(new UnauthorizedError("Missing or invalid Authorization header. Expected: Bearer <token>"));
+    return next(
+      new UnauthorizedError("Missing or invalid Authorization header. Expected: Bearer <token>"),
+    );
   }
 
   const token = authHeader.split(" ")[1];
@@ -73,7 +71,10 @@ export async function requireAuth(
 
   try {
     // 1. Verify JWT with Supabase Auth
-    const { data: { user }, error } = await getSupabase().auth.getUser(token);
+    const {
+      data: { user },
+      error,
+    } = await getSupabase().auth.getUser(token);
 
     if (error || !user) {
       return next(new InvalidTokenError(error?.message || "Invalid or expired token"));
@@ -86,7 +87,8 @@ export async function requireAuth(
       // 3. Fetch profile + business data from DB
       let { data: profile, error: profileErr } = await getSupabase()
         .from("profiles")
-        .select(`
+        .select(
+          `
           id,
           email,
           name,
@@ -96,12 +98,16 @@ export async function requireAuth(
           business_id,
           smtp_configured,
           permissions
-        `)
+        `,
+        )
         .eq("id", user.id)
         .single();
 
       if (profileErr || !profile) {
-        logger.warn({ userId: user.id, email: user.email }, "Profile not found during auth. Executing self-healing...");
+        logger.warn(
+          { userId: user.id, email: user.email },
+          "Profile not found during auth. Executing self-healing...",
+        );
 
         // Self-healing: create profile using admin client
         const { data: newProfile, error: createErr } = await getSupabase()
@@ -147,8 +153,8 @@ export async function requireAuth(
             new ForbiddenError(
               `Your organization has been suspended${
                 business.suspended_reason ? `: ${business.suspended_reason}` : ""
-              }. Please contact support.`
-            )
+              }. Please contact support.`,
+            ),
           );
         }
       }
@@ -177,7 +183,7 @@ export async function requireAuth(
       .update({ last_active_at: new Date().toISOString() })
       .eq("id", user.id);
     Promise.resolve(updatePromise).catch((err: any) =>
-      logger.warn({ err, userId: user.id }, "Failed to update last_active_at")
+      logger.warn({ err, userId: user.id }, "Failed to update last_active_at"),
     );
 
     next();
@@ -200,8 +206,8 @@ export function requireRole(roles: Role[]) {
     if (!roles.includes(authReq.user.role)) {
       return next(
         new ForbiddenError(
-          `Access denied. Requires one of: [${roles.join(", ")}]. Your role: ${authReq.user.role}`
-        )
+          `Access denied. Requires one of: [${roles.join(", ")}]. Your role: ${authReq.user.role}`,
+        ),
       );
     }
 

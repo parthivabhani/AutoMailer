@@ -25,7 +25,7 @@ export class NotificationsService {
   async notify(payload: NotificationPayload): Promise<void> {
     logger.info(
       { userId: payload.userId, type: payload.type, title: payload.title },
-      "Dispatching user notification"
+      "Dispatching user notification",
     );
 
     try {
@@ -56,7 +56,12 @@ export class NotificationsService {
   /**
    * Broadcasts a notification to all administrators in a business.
    */
-  async notifyAdmins(businessId: string, type: "info" | "warning" | "error" | "success", title: string, message: string): Promise<void> {
+  async notifyAdmins(
+    businessId: string,
+    type: "info" | "warning" | "error" | "success",
+    title: string,
+    message: string,
+  ): Promise<void> {
     try {
       const { data: admins } = await getSupabaseAdmin()
         .from("profiles")
@@ -73,8 +78,8 @@ export class NotificationsService {
               type,
               title,
               message,
-            })
-          )
+            }),
+          ),
         );
       }
     } catch (err) {

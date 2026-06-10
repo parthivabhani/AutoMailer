@@ -34,7 +34,7 @@ export class ContactsService {
           })),
           assignedSenderIds,
         };
-      })
+      }),
     );
   }
 
@@ -42,7 +42,13 @@ export class ContactsService {
    * Uploads and processes a new CSV contact list.
    * Normalizes the lead rows and writes them to the contacts database table.
    */
-  async uploadCsv(adminId: string, businessId: string, name: string, columns: string[], rows: any[]) {
+  async uploadCsv(
+    adminId: string,
+    businessId: string,
+    name: string,
+    columns: string[],
+    rows: any[],
+  ) {
     // 1. Insert into legacy csv_files table for backward compatibility
     const csv = await contactsRepository.insertCsvFile(adminId, name, columns, rows);
 
@@ -55,13 +61,20 @@ export class ContactsService {
       const companyKey = rowKeys.find((k) => /^(company|companyname|company_name)$/i.test(k)) || "";
       const titleKey = rowKeys.find((k) => /^(title|role|jobtitle|job_title)$/i.test(k)) || "";
 
-      const email = emailKey ? String(row[emailKey]).trim() : `no_email_${crypto.randomUUID()}@domain.com`;
+      const email = emailKey
+        ? String(row[emailKey]).trim()
+        : `no_email_${crypto.randomUUID()}@domain.com`;
       const leadName = nameKey ? String(row[nameKey]).trim() : "Recipient";
       const company = companyKey ? String(row[companyKey]).trim() : "";
       const title = titleKey ? String(row[titleKey]).trim() : "";
 
       // Check VIP indicators
-      const isVip = !!(row.is_vip || row.isVip || row._vip || /ceo|founder|director|president/i.test(title));
+      const isVip = !!(
+        row.is_vip ||
+        row.isVip ||
+        row._vip ||
+        /ceo|founder|director|president/i.test(title)
+      );
       const vipScore = row.vip_score || row.vipScore || (isVip ? 80 : 20);
 
       return {
@@ -81,7 +94,10 @@ export class ContactsService {
     try {
       await contactsRepository.bulkUpsertContacts(contactRecords);
     } catch (err) {
-      logger.error({ err, csvId: csv.id }, "Failed to perform bulk contacts upsert during CSV upload");
+      logger.error(
+        { err, csvId: csv.id },
+        "Failed to perform bulk contacts upsert during CSV upload",
+      );
     }
 
     return {
@@ -142,8 +158,14 @@ export class ContactsService {
           const rowStr = JSON.stringify(row).toLowerCase();
 
           for (const s of inferred) {
-            const labelKeywords = s.label.toLowerCase().split(/\s+/).filter((k: string) => k.length > 3);
-            const criteriaKeywords = s.criteria.toLowerCase().split(/\s+/).filter((k: string) => k.length > 3);
+            const labelKeywords = s.label
+              .toLowerCase()
+              .split(/\s+/)
+              .filter((k: string) => k.length > 3);
+            const criteriaKeywords = s.criteria
+              .toLowerCase()
+              .split(/\s+/)
+              .filter((k: string) => k.length > 3);
             const allKeywords = [...labelKeywords, ...criteriaKeywords];
 
             if (allKeywords.some((keyword) => rowStr.includes(keyword))) {
@@ -156,7 +178,7 @@ export class ContactsService {
         });
 
         segments = Array.from(groups, ([label, rowIds]) => ({ label, rowIds })).filter(
-          (s) => s.rowIds.length > 0
+          (s) => s.rowIds.length > 0,
         );
       }
     } catch (aiErr) {
@@ -165,7 +187,8 @@ export class ContactsService {
 
     // 3. Fallback Heuristics
     if (segments.length === 0) {
-      const segKey = cols.find((c) => /industry|segment|category|company|title|role/i.test(c)) ?? cols[0];
+      const segKey =
+        cols.find((c) => /industry|segment|category|company|title|role/i.test(c)) ?? cols[0];
       const groups = new Map<string, string[]>();
 
       rows.forEach((row) => {
@@ -185,7 +208,7 @@ export class ContactsService {
       segments.map(async (seg) => {
         const data = await contactsRepository.insertSegment(csvId, seg.label, seg.rowIds);
         return data;
-      })
+      }),
     );
 
     return insertedSegments.map((s) => ({
@@ -228,7 +251,11 @@ export class ContactsService {
     }
 
     if (!isAuthorized) {
-      throw new AppError("Sender not found or unauthorized to be assigned this list.", 403, "UNAUTHORIZED_ASSIGNMENT");
+      throw new AppError(
+        "Sender not found or unauthorized to be assigned this list.",
+        403,
+        "UNAUTHORIZED_ASSIGNMENT",
+      );
     }
 
     // 3. Clear old assignments and insert new

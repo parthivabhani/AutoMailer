@@ -40,10 +40,26 @@ export class AdminService {
       emailsSkipped: totals.skipped,
       deliverySuccessRate,
       monthlyVolume: [
-        { name: "Week 1", sent: Math.round(totals.sent * 0.2), failed: Math.round(totals.failed * 0.2) },
-        { name: "Week 2", sent: Math.round(totals.sent * 0.25), failed: Math.round(totals.failed * 0.25) },
-        { name: "Week 3", sent: Math.round(totals.sent * 0.25), failed: Math.round(totals.failed * 0.25) },
-        { name: "Week 4", sent: Math.round(totals.sent * 0.3), failed: Math.round(totals.failed * 0.3) },
+        {
+          name: "Week 1",
+          sent: Math.round(totals.sent * 0.2),
+          failed: Math.round(totals.failed * 0.2),
+        },
+        {
+          name: "Week 2",
+          sent: Math.round(totals.sent * 0.25),
+          failed: Math.round(totals.failed * 0.25),
+        },
+        {
+          name: "Week 3",
+          sent: Math.round(totals.sent * 0.25),
+          failed: Math.round(totals.failed * 0.25),
+        },
+        {
+          name: "Week 4",
+          sent: Math.round(totals.sent * 0.3),
+          failed: Math.round(totals.failed * 0.3),
+        },
       ],
     };
   }
@@ -74,7 +90,7 @@ export class AdminService {
           emailsSent,
           createdAt: s.created_at,
         };
-      })
+      }),
     );
   }
 
@@ -97,7 +113,11 @@ export class AdminService {
       });
 
       if (authErr || !authUser.user) {
-        throw new AppError(authErr?.message || "Failed to create authentication account.", 400, "AUTH_CREATION_FAILED");
+        throw new AppError(
+          authErr?.message || "Failed to create authentication account.",
+          400,
+          "AUTH_CREATION_FAILED",
+        );
       }
       newUserId = authUser.user.id;
     } else {
@@ -110,7 +130,11 @@ export class AdminService {
       });
 
       if (authErr || !authUser.user) {
-        throw new AppError(authErr?.message || "Failed to sign up sender.", 400, "AUTH_SIGNUP_FAILED");
+        throw new AppError(
+          authErr?.message || "Failed to sign up sender.",
+          400,
+          "AUTH_SIGNUP_FAILED",
+        );
       }
       newUserId = authUser.user.id;
     }

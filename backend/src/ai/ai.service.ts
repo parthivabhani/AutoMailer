@@ -146,7 +146,10 @@ export class AIService {
         });
       }
     } catch (err) {
-      logger.error({ err, businessId, tokens }, "Failed to increment AI token usage in subscription");
+      logger.error(
+        { err, businessId, tokens },
+        "Failed to increment AI token usage in subscription",
+      );
     }
   }
 }

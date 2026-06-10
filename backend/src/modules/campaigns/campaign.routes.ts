@@ -64,23 +64,27 @@ const UpdateCampaignSchema = {
 
 // ── GET /campaigns ────────────────────────────────────────────────────────────
 
-router.get("/", validate({ query: PaginationSchema }), async (req: AuthenticatedRequest, res: Response) => {
-  const adminId = req.user!.userId;
-  const { page = 1, limit = 20 } = req.query as any;
+router.get(
+  "/",
+  validate({ query: PaginationSchema }),
+  async (req: AuthenticatedRequest, res: Response) => {
+    const adminId = req.user!.userId;
+    const { page = 1, limit = 20 } = req.query as any;
 
-  try {
-    const result = await campaignService.getCampaigns(adminId, Number(page), Number(limit));
-    return sendSuccess(res, result.data, 200, {
-      page: Number(page),
-      limit: Number(limit),
-      total: result.count,
-      hasMore: result.hasMore,
-    });
-  } catch (err: any) {
-    logger.error({ err }, "Failed to fetch campaigns");
-    return sendError(res, 500, "FETCH_ERROR", "Failed to fetch campaigns");
-  }
-});
+    try {
+      const result = await campaignService.getCampaigns(adminId, Number(page), Number(limit));
+      return sendSuccess(res, result.data, 200, {
+        page: Number(page),
+        limit: Number(limit),
+        total: result.count,
+        hasMore: result.hasMore,
+      });
+    } catch (err: any) {
+      logger.error({ err }, "Failed to fetch campaigns");
+      return sendError(res, 500, "FETCH_ERROR", "Failed to fetch campaigns");
+    }
+  },
+);
 
 // ── POST /campaigns — Create a new campaign ───────────────────────────────────
 
@@ -98,33 +102,42 @@ router.post(
       return sendCreated(res, campaign);
     } catch (err: any) {
       logger.error({ err }, "Failed to create campaign");
-      return sendError(res, err.statusCode || 500, err.code || "CREATE_ERROR", err.message || "Failed to create campaign");
+      return sendError(
+        res,
+        err.statusCode || 500,
+        err.code || "CREATE_ERROR",
+        err.message || "Failed to create campaign",
+      );
     }
-  }
+  },
 );
 
 // ── GET /campaigns/:id — Get campaign details ─────────────────────────────────
 
-router.get("/:id", validate({ params: z.object({ id: UUIDSchema }) }), async (req: AuthenticatedRequest, res: Response) => {
-  const adminId = req.user!.userId;
-  const businessId = req.user!.businessId || adminId;
+router.get(
+  "/:id",
+  validate({ params: z.object({ id: UUIDSchema }) }),
+  async (req: AuthenticatedRequest, res: Response) => {
+    const adminId = req.user!.userId;
+    const businessId = req.user!.businessId || adminId;
 
-  try {
-    const campaign = await getSupabase()
-      .from("campaigns")
-      .select("*, campaign_jobs(count)")
-      .eq("id", req.params.id)
-      .eq("business_id", businessId)
-      .single();
+    try {
+      const campaign = await getSupabase()
+        .from("campaigns")
+        .select("*, campaign_jobs(count)")
+        .eq("id", req.params.id)
+        .eq("business_id", businessId)
+        .single();
 
-    if (campaign.error || !campaign.data) return sendNotFound(res, "Campaign");
+      if (campaign.error || !campaign.data) return sendNotFound(res, "Campaign");
 
-    return sendSuccess(res, campaign.data);
-  } catch (err) {
-    logger.error({ err }, "Failed to fetch campaign");
-    return sendError(res, 500, "FETCH_ERROR", "Failed to fetch campaign");
-  }
-});
+      return sendSuccess(res, campaign.data);
+    } catch (err) {
+      logger.error({ err }, "Failed to fetch campaign");
+      return sendError(res, 500, "FETCH_ERROR", "Failed to fetch campaign");
+    }
+  },
+);
 
 // ── PATCH /campaigns/:id — Update a draft campaign ───────────────────────────
 
@@ -145,9 +158,14 @@ router.patch(
       return sendSuccess(res, updated);
     } catch (err: any) {
       logger.error({ err }, "Failed to update campaign");
-      return sendError(res, err.statusCode || 500, err.code || "UPDATE_ERROR", err.message || "Failed to update campaign");
+      return sendError(
+        res,
+        err.statusCode || 500,
+        err.code || "UPDATE_ERROR",
+        err.message || "Failed to update campaign",
+      );
     }
-  }
+  },
 );
 
 // ── POST /campaigns/:id/launch — Immediately launch a campaign ────────────────
@@ -163,7 +181,12 @@ router.post(
     const businessId = req.user!.businessId || adminId;
 
     try {
-      const result = await campaignService.launchCampaign(adminId, businessId, req.params.id, req.body);
+      const result = await campaignService.launchCampaign(
+        adminId,
+        businessId,
+        req.params.id,
+        req.body,
+      );
       return sendSuccess(res, {
         campaignId: result.campaignId,
         status: result.status,
@@ -172,9 +195,14 @@ router.post(
       });
     } catch (err: any) {
       logger.error({ err }, "Failed to launch campaign");
-      return sendError(res, err.statusCode || 500, err.code || "LAUNCH_ERROR", err.message || "Failed to launch campaign");
+      return sendError(
+        res,
+        err.statusCode || 500,
+        err.code || "LAUNCH_ERROR",
+        err.message || "Failed to launch campaign",
+      );
     }
-  }
+  },
 );
 
 // ── POST /campaigns/:id/pause ─────────────────────────────────────────────────
@@ -192,9 +220,14 @@ router.post(
       return sendSuccess(res, result);
     } catch (err: any) {
       logger.error({ err }, "Failed to pause campaign");
-      return sendError(res, err.statusCode || 500, err.code || "PAUSE_ERROR", err.message || "Failed to pause campaign");
+      return sendError(
+        res,
+        err.statusCode || 500,
+        err.code || "PAUSE_ERROR",
+        err.message || "Failed to pause campaign",
+      );
     }
-  }
+  },
 );
 
 // ── GET /campaigns/:id/progress — Live progress for dashboard ─────────────────
@@ -218,7 +251,7 @@ router.get("/:id/progress", async (req: AuthenticatedRequest, res: Response) => 
         acc[j.status] = (acc[j.status] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
 
     return sendSuccess(res, {

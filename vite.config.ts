@@ -9,10 +9,10 @@ export default defineConfig({
     tsconfigPaths(),
     tanstackStart({
       server: {
-        entry: "src/server.ts"
-      }
+        entry: "src/server.ts",
+      },
     }),
     react(),
-    tailwindcss()
-  ]
+    tailwindcss(),
+  ],
 });

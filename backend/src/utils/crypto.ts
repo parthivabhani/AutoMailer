@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const ENCRYPTION_KEY = process.env.SMTP_ENCRYPTION_SECRET || "default_encryption_secret_must_be_32_bytes_long!!"; // Must be 32 bytes
+const ENCRYPTION_KEY =
+  process.env.SMTP_ENCRYPTION_SECRET || "default_encryption_secret_must_be_32_bytes_long!!"; // Must be 32 bytes
 const IV_LENGTH = 16; // For AES, this is always 16 bytes
 
 // Helper to ensure key is exactly 32 bytes

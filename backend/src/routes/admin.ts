@@ -68,13 +68,32 @@ router.get("/stats", async (req: AuthenticatedRequest, res: Response) => {
       emailsSent: totalSent,
       emailsFailed: totalFailed,
       emailsSkipped: totalSkipped,
-      deliverySuccessRate: totalSent + totalFailed > 0 ? Math.round((totalSent / (totalSent + totalFailed)) * 100) : 100,
+      deliverySuccessRate:
+        totalSent + totalFailed > 0
+          ? Math.round((totalSent / (totalSent + totalFailed)) * 100)
+          : 100,
       monthlyVolume: [
-        { name: "Week 1", sent: Math.round(totalSent * 0.2), failed: Math.round(totalFailed * 0.2) },
-        { name: "Week 2", sent: Math.round(totalSent * 0.25), failed: Math.round(totalFailed * 0.25) },
-        { name: "Week 3", sent: Math.round(totalSent * 0.25), failed: Math.round(totalFailed * 0.25) },
-        { name: "Week 4", sent: Math.round(totalSent * 0.3), failed: Math.round(totalFailed * 0.3) }
-      ]
+        {
+          name: "Week 1",
+          sent: Math.round(totalSent * 0.2),
+          failed: Math.round(totalFailed * 0.2),
+        },
+        {
+          name: "Week 2",
+          sent: Math.round(totalSent * 0.25),
+          failed: Math.round(totalFailed * 0.25),
+        },
+        {
+          name: "Week 3",
+          sent: Math.round(totalSent * 0.25),
+          failed: Math.round(totalFailed * 0.25),
+        },
+        {
+          name: "Week 4",
+          sent: Math.round(totalSent * 0.3),
+          failed: Math.round(totalFailed * 0.3),
+        },
+      ],
     });
   } catch (err) {
     console.error("Error in admin stats:", err);
@@ -117,9 +136,9 @@ router.get("/senders", async (req: AuthenticatedRequest, res: Response) => {
           email: s.email,
           assignedCsvIds: csvIds,
           emailsSent: emailCount || 0,
-          createdAt: s.created_at
+          createdAt: s.created_at,
         };
-      })
+      }),
     );
 
     return res.json(formattedSenders);
@@ -147,11 +166,13 @@ router.post("/senders", async (req: AuthenticatedRequest, res: Response) => {
         email,
         password,
         email_confirm: true,
-        user_metadata: { name, role: "sender" }
+        user_metadata: { name, role: "sender" },
       });
 
       if (authErr || !authUser.user) {
-        return res.status(400).json({ error: authErr?.message || "Failed to create authentication account." });
+        return res
+          .status(400)
+          .json({ error: authErr?.message || "Failed to create authentication account." });
       }
       newUserId = authUser.user.id;
     } else {
@@ -160,8 +181,8 @@ router.post("/senders", async (req: AuthenticatedRequest, res: Response) => {
         email,
         password,
         options: {
-          data: { name, role: "sender" }
-        }
+          data: { name, role: "sender" },
+        },
       });
 
       if (authErr || !authUser.user) {
@@ -178,13 +199,15 @@ router.post("/senders", async (req: AuthenticatedRequest, res: Response) => {
         name,
         email,
         role: "sender",
-        admin_id: adminId
+        admin_id: adminId,
       })
       .select()
       .single();
 
     if (profileErr) {
-      return res.status(500).json({ error: `Sender auth created, but profile insertion failed: ${profileErr.message}` });
+      return res.status(500).json({
+        error: `Sender auth created, but profile insertion failed: ${profileErr.message}`,
+      });
     }
 
     const finalProfile = insertedProfile;
@@ -195,7 +218,7 @@ router.post("/senders", async (req: AuthenticatedRequest, res: Response) => {
       email: finalProfile.email,
       assignedCsvIds: [],
       emailsSent: 0,
-      createdAt: finalProfile.created_at
+      createdAt: finalProfile.created_at,
     });
   } catch (err) {
     console.error("Error creating sender:", err);
@@ -227,10 +250,7 @@ router.delete("/senders/:id", async (req: AuthenticatedRequest, res: Response) =
     }
 
     // 3. Delete profile from database (cascade deletes assignments)
-    const { error: deleteErr } = await supabase
-      .from("profiles")
-      .delete()
-      .eq("id", id);
+    const { error: deleteErr } = await supabase.from("profiles").delete().eq("id", id);
 
     if (deleteErr) return res.status(500).json({ error: deleteErr.message });
 
@@ -256,10 +276,7 @@ router.get("/csv", async (req: AuthenticatedRequest, res: Response) => {
     // Format for frontend
     const formattedCSVs = await Promise.all(
       (csvs || []).map(async (c) => {
-        const { data: segments } = await supabase
-          .from("segments")
-          .select("*")
-          .eq("csv_id", c.id);
+        const { data: segments } = await supabase.from("segments").select("*").eq("csv_id", c.id);
 
         const { data: assignments } = await supabase
           .from("csv_assignments")
@@ -277,11 +294,11 @@ router.get("/csv", async (req: AuthenticatedRequest, res: Response) => {
           segments: (segments || []).map((s) => ({
             id: s.id,
             label: s.label,
-            rowIds: s.row_ids
+            rowIds: s.row_ids,
           })),
-          assignedSenderIds
+          assignedSenderIds,
         };
-      })
+      }),
     );
 
     return res.json(formattedCSVs);
@@ -307,7 +324,7 @@ router.post("/csv", async (req: AuthenticatedRequest, res: Response) => {
         admin_id: adminId,
         name,
         columns,
-        rows
+        rows,
       })
       .select()
       .single();
@@ -321,7 +338,7 @@ router.post("/csv", async (req: AuthenticatedRequest, res: Response) => {
       columns: csv.columns,
       rows: csv.rows,
       segments: [],
-      assignedSenderIds: []
+      assignedSenderIds: [],
     });
   } catch (err) {
     console.error("Error uploading CSV:", err);
@@ -361,18 +378,18 @@ router.post("/csv/:id/segment", async (req: AuthenticatedRequest, res: Response)
     if (groqKey) {
       try {
         const groq = new Groq({ apiKey: groqKey });
-        
+
         // Take a small subset of rows (up to 15) to help Groq design optimal segment groups
-        const sampleRows = rows.slice(0, 15).map(r => {
+        const sampleRows = rows.slice(0, 15).map((r) => {
           const simplified: any = {};
-          cols.forEach(c => {
+          cols.forEach((c) => {
             if (/company|industry|role|title|segment|category/i.test(c)) {
               simplified[c] = r[c];
             }
           });
           // Fallback to first few columns if no specific matching found
           if (Object.keys(simplified).length === 0) {
-            cols.slice(0, 3).forEach(c => simplified[c] = r[c]);
+            cols.slice(0, 3).forEach((c) => (simplified[c] = r[c]));
           }
           simplified._id = r._id;
           return simplified;
@@ -393,7 +410,7 @@ Respond ONLY with the raw JSON array. Do not include markdown blocks, notes, or 
           messages: [{ role: "user", content: prompt }],
           model: "llama-3.1-8b-instant",
           temperature: 0.1,
-          response_format: { type: "json_object" }
+          response_format: { type: "json_object" },
         });
 
         const content = chatCompletion.choices[0]?.message?.content || "";
@@ -404,23 +421,29 @@ Respond ONLY with the raw JSON array. Do not include markdown blocks, notes, or 
           // Heuristical classification: map each row to one of the inferred labels
           const labels: string[] = inferredSegments.map((s: any) => s.label);
           const groups = new Map<string, string[]>();
-          labels.forEach(l => groups.set(l, []));
-          
+          labels.forEach((l) => groups.set(l, []));
+
           // Fallback group
           groups.set("Other Services", []);
 
           rows.forEach((row) => {
             // Find most matching segment label
             let matchedLabel = labels[0];
-            
+
             // Simple keyword matching heuristic per row
             const rowStr = JSON.stringify(row).toLowerCase();
             for (const s of inferredSegments) {
-              const labelKeywords = s.label.toLowerCase().split(/\s+/).filter((k: string) => k.length > 3);
-              const criteriaKeywords = s.criteria.toLowerCase().split(/\s+/).filter((k: string) => k.length > 3);
+              const labelKeywords = s.label
+                .toLowerCase()
+                .split(/\s+/)
+                .filter((k: string) => k.length > 3);
+              const criteriaKeywords = s.criteria
+                .toLowerCase()
+                .split(/\s+/)
+                .filter((k: string) => k.length > 3);
               const allKeywords = [...labelKeywords, ...criteriaKeywords];
-              
-              if (allKeywords.some(keyword => rowStr.includes(keyword))) {
+
+              if (allKeywords.some((keyword) => rowStr.includes(keyword))) {
                 matchedLabel = s.label;
                 break;
               }
@@ -429,7 +452,9 @@ Respond ONLY with the raw JSON array. Do not include markdown blocks, notes, or 
             groups.get(matchedLabel)!.push(row._id);
           });
 
-          segments = Array.from(groups, ([label, rowIds]) => ({ label, rowIds })).filter(s => s.rowIds.length > 0);
+          segments = Array.from(groups, ([label, rowIds]) => ({ label, rowIds })).filter(
+            (s) => s.rowIds.length > 0,
+          );
         }
       } catch (aiErr) {
         console.error("Groq segmentation failed, falling back to heuristic:", aiErr);
@@ -438,9 +463,10 @@ Respond ONLY with the raw JSON array. Do not include markdown blocks, notes, or 
 
     // 3. Fallback Heuristic if Groq fails or is not key-configured
     if (segments.length === 0) {
-      const segKey = cols.find((c) => /industry|segment|category|company|title|role/i.test(c)) ?? cols[0];
+      const segKey =
+        cols.find((c) => /industry|segment|category|company|title|role/i.test(c)) ?? cols[0];
       const groups = new Map<string, string[]>();
-      
+
       rows.forEach((row) => {
         const val = String(row[segKey] ?? "Uncategorized").trim();
         const k = val || "Uncategorized";
@@ -450,7 +476,7 @@ Respond ONLY with the raw JSON array. Do not include markdown blocks, notes, or 
 
       segments = Array.from(groups, ([label, rowIds]) => ({
         label,
-        rowIds
+        rowIds,
       }));
     }
 
@@ -464,21 +490,21 @@ Respond ONLY with the raw JSON array. Do not include markdown blocks, notes, or 
           .insert({
             csv_id: id,
             label: seg.label,
-            row_ids: seg.rowIds
+            row_ids: seg.rowIds,
           })
           .select()
           .single();
         if (error) throw new Error(error.message);
         return data;
-      })
+      }),
     );
 
     return res.json(
       insertedSegments.map((s) => ({
         id: s.id,
         label: s.label,
-        rowIds: s.row_ids
-      }))
+        rowIds: s.row_ids,
+      })),
     );
   } catch (err) {
     console.error("Error segmenting CSV:", err);
@@ -526,23 +552,19 @@ router.post("/csv/:id/assign", async (req: AuthenticatedRequest, res: Response) 
     }
 
     if (!isAuthorized) {
-      return res.status(404).json({ error: "Sender not found or unauthorized to be assigned this CSV." });
+      return res
+        .status(404)
+        .json({ error: "Sender not found or unauthorized to be assigned this CSV." });
     }
 
     // 3. Delete any pre-existing assignments for this sender and CSV, then insert fresh
-    await supabase
-      .from("csv_assignments")
-      .delete()
-      .eq("csv_id", id)
-      .eq("sender_id", senderId);
+    await supabase.from("csv_assignments").delete().eq("csv_id", id).eq("sender_id", senderId);
 
-    const { error: assignErr } = await supabase
-      .from("csv_assignments")
-      .insert({
-        csv_id: id,
-        sender_id: senderId,
-        segment_id: segmentId || null
-      });
+    const { error: assignErr } = await supabase.from("csv_assignments").insert({
+      csv_id: id,
+      sender_id: senderId,
+      segment_id: segmentId || null,
+    });
 
     if (assignErr) return res.status(500).json({ error: assignErr.message });
 
@@ -601,7 +623,7 @@ router.get("/logs", async (req: AuthenticatedRequest, res: Response) => {
       body: l.body,
       status: l.status,
       errorMessage: l.error_message,
-      timestamp: l.timestamp
+      timestamp: l.timestamp,
     }));
 
     return res.json(formattedLogs);
@@ -625,13 +647,14 @@ router.post("/smtp", async (req: AuthenticatedRequest, res: Response) => {
     const encryptedPassword = encrypt(appPassword);
 
     // 2. Upsert config
-    const { error: smtpErr } = await supabase
-      .from("smtp_configs")
-      .upsert({
+    const { error: smtpErr } = await supabase.from("smtp_configs").upsert(
+      {
         admin_id: adminId,
         gmail,
-        encrypted_password: encryptedPassword
-      }, { onConflict: "admin_id" });
+        encrypted_password: encryptedPassword,
+      },
+      { onConflict: "admin_id" },
+    );
 
     if (smtpErr) return res.status(500).json({ error: smtpErr.message });
 

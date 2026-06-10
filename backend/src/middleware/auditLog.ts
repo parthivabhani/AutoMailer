@@ -42,11 +42,9 @@ export function audit(action: string) {
         };
 
         // Fire-and-forget — don't block the response
-        const insertPromise = getSupabaseAdmin()
-          .from("audit_logs")
-          .insert(entry);
+        const insertPromise = getSupabaseAdmin().from("audit_logs").insert(entry);
         Promise.resolve(insertPromise).catch((err: any) =>
-          auditLogger.error({ err, action }, "Failed to write audit log")
+          auditLogger.error({ err, action }, "Failed to write audit log"),
         );
 
         auditLogger.info(entry, `Audit: ${action}`);
@@ -66,8 +64,14 @@ function sanitizeForAudit(body: Record<string, any>): Record<string, any> {
   if (!body || typeof body !== "object") return {};
 
   const SENSITIVE_FIELDS = [
-    "password", "app_password", "appPassword", "secret",
-    "apiKey", "token", "encrypted_password", "stripe_key",
+    "password",
+    "app_password",
+    "appPassword",
+    "secret",
+    "apiKey",
+    "token",
+    "encrypted_password",
+    "stripe_key",
   ];
 
   const cleaned: Record<string, any> = {};

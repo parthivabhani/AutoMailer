@@ -34,24 +34,57 @@ function localGenerateEmail(params: GenerateEmailParams): AIResult {
   const name = params.recipient.name || params.recipient.Name || "there";
   const company = params.recipient.company || params.recipient.Company || "your company";
   const content = `Hi ${name},\n\nI noticed you are doing some amazing work at ${company}.\n\n${params.brief}\n\nI'd love to connect sometime this week to discuss how we can help. Does Thursday at 2:00 PM work for a brief 10-minute chat?\n\nBest,\nTeam`;
-  return { content, promptTokens: 0, completionTokens: 0, totalTokens: 0, provider: "groq", model: "local-fallback", fallbackUsed: true, costUsd: 0 };
+  return {
+    content,
+    promptTokens: 0,
+    completionTokens: 0,
+    totalTokens: 0,
+    provider: "groq",
+    model: "local-fallback",
+    fallbackUsed: true,
+    costUsd: 0,
+  };
 }
 
 function localHumanizeEmail(params: HumanizeEmailParams): AIResult {
   const content = params.body.replace(
     /\b(utilize|leverage|synergy|optimize|disrupt|paradigm shift)\b/gi,
-    (m) => ({ utilize: "use", leverage: "use", synergy: "teamwork", optimize: "improve" }[m.toLowerCase()] || "help")
+    (m) =>
+      ({ utilize: "use", leverage: "use", synergy: "teamwork", optimize: "improve" })[
+        m.toLowerCase()
+      ] || "help",
   );
-  return { content, promptTokens: 0, completionTokens: 0, totalTokens: 0, provider: "groq", model: "local-fallback", fallbackUsed: true, costUsd: 0 };
+  return {
+    content,
+    promptTokens: 0,
+    completionTokens: 0,
+    totalTokens: 0,
+    provider: "groq",
+    model: "local-fallback",
+    fallbackUsed: true,
+    costUsd: 0,
+  };
 }
 
 function localGenerateSubjects(params: GenerateSubjectsParams): AIResult {
   const snippet = params.body.split(/\s+/).slice(0, 4).join(" ");
   const subjects = [
-    `Quick idea on ${snippet}`, `Question about your team`,
-    `Following up regarding ${snippet}`, `Simple thought for you`, `Worth 5 minutes?`,
+    `Quick idea on ${snippet}`,
+    `Question about your team`,
+    `Following up regarding ${snippet}`,
+    `Simple thought for you`,
+    `Worth 5 minutes?`,
   ];
-  return { content: subjects, promptTokens: 0, completionTokens: 0, totalTokens: 0, provider: "groq", model: "local-fallback", fallbackUsed: true, costUsd: 0 };
+  return {
+    content: subjects,
+    promptTokens: 0,
+    completionTokens: 0,
+    totalTokens: 0,
+    provider: "groq",
+    model: "local-fallback",
+    fallbackUsed: true,
+    costUsd: 0,
+  };
 }
 
 // ── Provider Priority Order ───────────────────────────────────────────────────
@@ -82,7 +115,7 @@ async function trackAIUsage(
   businessId: string,
   userId: string,
   operation: AIOperation,
-  result: AIResult
+  result: AIResult,
 ): Promise<void> {
   try {
     await getSupabaseAdmin().from("ai_usage").insert({
@@ -113,7 +146,7 @@ export class AIRouter {
     operation: string,
     providers: AIProvider[],
     fn: (provider: AIProvider) => Promise<AIResult>,
-    localFallback: () => AIResult
+    localFallback: () => AIResult,
   ): Promise<AIResult> {
     for (const provider of providers) {
       try {
@@ -123,7 +156,7 @@ export class AIRouter {
       } catch (err) {
         logger.warn(
           { provider: provider.name, operation, err },
-          `AI provider failed, trying next...`
+          `AI provider failed, trying next...`,
         );
       }
     }
@@ -141,12 +174,14 @@ export class AIRouter {
     businessId: string,
     userId: string,
     cacheKeyParams: Record<string, any>,
-    runCascade: () => Promise<AIResult>
+    runCascade: () => Promise<AIResult>,
   ): Promise<AIResult> {
     // 1. Capacity check
     const hasCapacity = await aiService.checkAICapacity(businessId);
     if (!hasCapacity) {
-      throw new Error("AI token limit exceeded. Please upgrade your plan to generate more content.");
+      throw new Error(
+        "AI token limit exceeded. Please upgrade your plan to generate more content.",
+      );
     }
 
     // 2. Cache check
@@ -189,12 +224,13 @@ export class AIRouter {
       params.businessId,
       params.userId,
       { brief: params.brief, recipient: params.recipient },
-      () => this.runWithFallback(
-        "generateEmail",
-        providers,
-        (p) => p.generateEmail(params),
-        () => localGenerateEmail(params)
-      )
+      () =>
+        this.runWithFallback(
+          "generateEmail",
+          providers,
+          (p) => p.generateEmail(params),
+          () => localGenerateEmail(params),
+        ),
     );
   }
 
@@ -205,12 +241,13 @@ export class AIRouter {
       params.businessId,
       params.userId,
       { body: params.body },
-      () => this.runWithFallback(
-        "humanizeEmail",
-        providers,
-        (p) => p.humanizeEmail(params),
-        () => localHumanizeEmail(params)
-      )
+      () =>
+        this.runWithFallback(
+          "humanizeEmail",
+          providers,
+          (p) => p.humanizeEmail(params),
+          () => localHumanizeEmail(params),
+        ),
     );
   }
 
@@ -221,12 +258,13 @@ export class AIRouter {
       params.businessId,
       params.userId,
       { body: params.body, count: params.count },
-      () => this.runWithFallback(
-        "generateSubjects",
-        providers,
-        (p) => p.generateSubjects(params),
-        () => localGenerateSubjects(params)
-      )
+      () =>
+        this.runWithFallback(
+          "generateSubjects",
+          providers,
+          (p) => p.generateSubjects(params),
+          () => localGenerateSubjects(params),
+        ),
     );
   }
 
@@ -237,12 +275,22 @@ export class AIRouter {
       params.businessId,
       params.userId,
       { rowsCount: params.rows.length, columns: params.columns },
-      () => this.runWithFallback(
-        "segmentContacts",
-        providers,
-        (p) => p.segmentContacts(params),
-        () => ({ content: "[]", promptTokens: 0, completionTokens: 0, totalTokens: 0, provider: "groq", model: "local-fallback", fallbackUsed: true, costUsd: 0 })
-      )
+      () =>
+        this.runWithFallback(
+          "segmentContacts",
+          providers,
+          (p) => p.segmentContacts(params),
+          () => ({
+            content: "[]",
+            promptTokens: 0,
+            completionTokens: 0,
+            totalTokens: 0,
+            provider: "groq",
+            model: "local-fallback",
+            fallbackUsed: true,
+            costUsd: 0,
+          }),
+        ),
     );
   }
 }

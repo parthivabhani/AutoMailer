@@ -20,7 +20,7 @@ async function processAIJob(job: Job<AIJobData>): Promise<AIResult> {
 
   workerLogger.info(
     { jobId: job.id, operation, businessId, userId },
-    "Processing AI background task"
+    "Processing AI background task",
   );
 
   let result: AIResult;
@@ -93,7 +93,10 @@ async function processAIJob(job: Job<AIJobData>): Promise<AIResult> {
           parsedScore = JSON.parse(jsonMatch[0]);
         }
       } catch (err) {
-        workerLogger.warn({ err, text: response.content }, "Failed to parse lead score JSON from AI output");
+        workerLogger.warn(
+          { err, text: response.content },
+          "Failed to parse lead score JSON from AI output",
+        );
       }
 
       // Update the contact's is_vip status & vip_score in the database
@@ -154,14 +157,10 @@ let _aiWorker: Worker | null = null;
 export function startAIWorker(): Worker {
   if (_aiWorker) return _aiWorker;
 
-  _aiWorker = new Worker<AIJobData>(
-    QUEUE_NAMES.AI_GENERATE,
-    processAIJob,
-    {
-      connection: createBullMQConnection(),
-      concurrency: 2, // Concurrency limit for concurrent AI requests
-    }
-  );
+  _aiWorker = new Worker<AIJobData>(QUEUE_NAMES.AI_GENERATE, processAIJob, {
+    connection: createBullMQConnection(),
+    concurrency: 2, // Concurrency limit for concurrent AI requests
+  });
 
   _aiWorker.on("completed", (job) => {
     workerLogger.debug({ jobId: job.id }, "AI worker job completed");

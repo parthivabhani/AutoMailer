@@ -25,7 +25,7 @@ async function processBounceJob(job: Job<BounceJobPayload>): Promise<void> {
 
   workerLogger.warn(
     { jobId: job.id, recipientEmail, bounceType },
-    "Processing bounce/complaint event"
+    "Processing bounce/complaint event",
   );
 
   const supabase = getSupabaseAdmin();
@@ -41,13 +41,13 @@ async function processBounceJob(job: Job<BounceJobPayload>): Promise<void> {
       .limit(5);
 
     const businessIds = Array.from(
-      new Set((recentLogs || []).map((l) => l.business_id).filter(Boolean))
+      new Set((recentLogs || []).map((l) => l.business_id).filter(Boolean)),
     );
 
     if (businessIds.length > 0) {
       workerLogger.info(
         { recipientEmail, businesses: businessIds },
-        "Adding recipient to contact_dedup blocks"
+        "Adding recipient to contact_dedup blocks",
       );
 
       // Add to contact_dedup with null cooldown_until (permanent block)
@@ -60,9 +60,9 @@ async function processBounceJob(job: Job<BounceJobPayload>): Promise<void> {
               sent_at: new Date().toISOString(),
               cooldown_until: null, // Permanent block
             },
-            { onConflict: "business_id, recipient_email" }
-          )
-        )
+            { onConflict: "business_id, recipient_email" },
+          ),
+        ),
       );
     }
   }
@@ -80,7 +80,7 @@ async function processBounceJob(job: Job<BounceJobPayload>): Promise<void> {
   if (logUpdateError) {
     workerLogger.error(
       { err: logUpdateError, recipientEmail },
-      "Failed to update email logs for bounce"
+      "Failed to update email logs for bounce",
     );
   }
 
@@ -92,14 +92,10 @@ let _bounceWorker: Worker | null = null;
 export function startBounceWorker(): Worker {
   if (_bounceWorker) return _bounceWorker;
 
-  _bounceWorker = new Worker<BounceJobPayload>(
-    QUEUE_NAMES.BOUNCE_PROCESS,
-    processBounceJob,
-    {
-      connection: createBullMQConnection(),
-      concurrency: 3,
-    }
-  );
+  _bounceWorker = new Worker<BounceJobPayload>(QUEUE_NAMES.BOUNCE_PROCESS, processBounceJob, {
+    connection: createBullMQConnection(),
+    concurrency: 3,
+  });
 
   _bounceWorker.on("completed", (job) => {
     workerLogger.debug({ jobId: job.id }, "Bounce worker job completed");

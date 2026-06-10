@@ -42,12 +42,12 @@ function senderKeyGenerator(req: Request): string {
 function createLimiter(
   config: { windowMs: number; max: number },
   keyGenerator?: (req: Request) => string,
-  message?: string
+  message?: string,
 ): RateLimitRequestHandler {
   return rateLimit({
     windowMs: config.windowMs,
     max: config.max,
-    standardHeaders: true,   // Return rate limit info in `RateLimit-*` headers
+    standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
     legacyHeaders: false,
     keyGenerator: keyGenerator || ((req) => req.ip || "unknown"),
     message: {
@@ -64,7 +64,7 @@ function createLimiter(
           path: req.path,
           key: keyGenerator ? keyGenerator(req) : req.ip,
         },
-        "Rate limit exceeded"
+        "Rate limit exceeded",
       );
       res.status(options.statusCode).json(options.message);
     },
@@ -77,33 +77,33 @@ function createLimiter(
 export const globalRateLimiter = createLimiter(
   RATE_LIMITS.GLOBAL_PER_IP,
   (req) => `ip:${req.ip}`,
-  "Too many requests from your IP. Please wait before retrying."
+  "Too many requests from your IP. Please wait before retrying.",
 );
 
 /** Applied to all authenticated routes — per-tenant limit */
 export const tenantRateLimiter = createLimiter(
   RATE_LIMITS.PER_TENANT,
   tenantKeyGenerator,
-  "Your organization has exceeded the request rate limit. Please slow down."
+  "Your organization has exceeded the request rate limit. Please slow down.",
 );
 
 /** Stricter limit for campaign send endpoints — prevent spam */
 export const campaignSendRateLimiter = createLimiter(
   RATE_LIMITS.CAMPAIGN_SEND,
   senderKeyGenerator,
-  "Campaign send rate limit reached. You can dispatch up to 5 campaigns per minute."
+  "Campaign send rate limit reached. You can dispatch up to 5 campaigns per minute.",
 );
 
 /** AI generation endpoints — prevent token abuse */
 export const aiRateLimiter = createLimiter(
   RATE_LIMITS.AI_GENERATE,
   tenantKeyGenerator,
-  "AI generation rate limit reached. Maximum 30 requests per minute per organization."
+  "AI generation rate limit reached. Maximum 30 requests per minute per organization.",
 );
 
 /** Auth endpoints — prevent brute force */
 export const authRateLimiter = createLimiter(
   RATE_LIMITS.AUTH,
   (req) => `ip:${req.ip}`,
-  "Too many authentication attempts. Please wait 15 minutes before retrying."
+  "Too many authentication attempts. Please wait 15 minutes before retrying.",
 );

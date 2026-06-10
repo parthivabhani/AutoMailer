@@ -57,7 +57,7 @@ export const logger: Logger = pino(
       censor: "[REDACTED]",
     },
   },
-  transport ? pino.transport(transport) : undefined
+  transport ? pino.transport(transport) : undefined,
 );
 
 // ── Child Logger Factory ──────────────────────────────────────────────────────

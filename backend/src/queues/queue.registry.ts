@@ -109,14 +109,19 @@ export async function closeAllQueues(): Promise<void> {
 
 // ── Queue Health Check ────────────────────────────────────────────────────────
 
-export async function getQueueHealthReport(): Promise<Record<string, {
-  name: string;
-  waiting: number;
-  active: number;
-  completed: number;
-  failed: number;
-  delayed: number;
-}>> {
+export async function getQueueHealthReport(): Promise<
+  Record<
+    string,
+    {
+      name: string;
+      waiting: number;
+      active: number;
+      completed: number;
+      failed: number;
+      delayed: number;
+    }
+  >
+> {
   const report: Record<string, any> = {};
 
   for (const [name, queue] of _queues.entries()) {

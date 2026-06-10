@@ -67,9 +67,7 @@ export function validate(schema: ValidationSchema) {
     }
 
     if (errors.length > 0) {
-      return next(
-        new ValidationError("Request validation failed", { errors })
-      );
+      return next(new ValidationError("Request validation failed", { errors }));
     }
 
     next();

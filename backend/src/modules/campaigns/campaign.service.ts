@@ -44,11 +44,7 @@ export class CampaignService {
 
     // If scheduled, register the delayed BullMQ job
     if (payload.scheduledAt) {
-      await scheduleEmailCampaign(
-        campaign.id,
-        new Date(payload.scheduledAt),
-        payload.timezone
-      );
+      await scheduleEmailCampaign(campaign.id, new Date(payload.scheduledAt), payload.timezone);
     }
 
     return campaign;
@@ -65,12 +61,17 @@ export class CampaignService {
     }
 
     if (existing.status === CAMPAIGN_STATUS.SENDING) {
-      throw new AppError("Cannot edit a campaign that is currently sending. Pause it first.", 409, "CAMPAIGN_SENDING");
+      throw new AppError(
+        "Cannot edit a campaign that is currently sending. Pause it first.",
+        409,
+        "CAMPAIGN_SENDING",
+      );
     }
 
     const updateData: Record<string, any> = {};
     if (payload.name !== undefined) updateData.name = payload.name;
-    if (payload.subjectTemplate !== undefined) updateData.subject_template = payload.subjectTemplate;
+    if (payload.subjectTemplate !== undefined)
+      updateData.subject_template = payload.subjectTemplate;
     if (payload.bodyTemplate !== undefined) updateData.body_template = payload.bodyTemplate;
     if (payload.senderOverride !== undefined) updateData.sender_override = payload.senderOverride;
     if (payload.scheduledAt !== undefined) {
@@ -152,7 +153,7 @@ export class CampaignService {
         senderOverride: campaign.sender_override,
         delayBetweenEmailsMs: campaign.delay_between_emails_ms,
         attachments: [],
-      }
+      },
     );
 
     return {

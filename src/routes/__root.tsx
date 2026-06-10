@@ -75,7 +75,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Auto Mailer — AI Email Outreach" },
-      { name: "description", content: "Auto Mailer: AI-assisted cold email outreach with team sending, CSV segmentation, and SMTP delivery." },
+      {
+        name: "description",
+        content:
+          "Auto Mailer: AI-assisted cold email outreach with team sending, CSV segmentation, and SMTP delivery.",
+      },
       { name: "author", content: "Auto Mailer" },
       { property: "og:title", content: "Auto Mailer" },
       { property: "og:description", content: "AI-assisted cold email outreach for B2B teams." },

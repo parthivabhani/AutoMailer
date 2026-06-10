@@ -15,7 +15,7 @@ router.post("/login", async (req: Request, res: Response) => {
     // 1. Sign in with Supabase Auth
     const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (authErr || !authData.session || !authData.user) {
@@ -40,7 +40,7 @@ router.post("/login", async (req: Request, res: Response) => {
           id: userId,
           name: "User",
           email: authData.user.email || email,
-          role: "sender" // Safe default role
+          role: "sender", // Safe default role
         })
         .select()
         .single();
@@ -56,8 +56,8 @@ router.post("/login", async (req: Request, res: Response) => {
             email: authData.user.email,
             name: "User",
             role: "sender",
-            smtpConfigured: false
-          }
+            smtpConfigured: false,
+          },
         });
       }
     }
@@ -70,8 +70,8 @@ router.post("/login", async (req: Request, res: Response) => {
         name: profile.name,
         role: profile.role,
         smtpConfigured: profile.smtp_configured,
-        adminId: profile.admin_id
-      }
+        adminId: profile.admin_id,
+      },
     });
   } catch (err) {
     console.error("Auth login router error:", err);

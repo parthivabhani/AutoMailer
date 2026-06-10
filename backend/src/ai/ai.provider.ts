@@ -6,7 +6,13 @@
  * provides a standard fallback chain.
  */
 
-import type { AIResult, GenerateEmailParams, HumanizeEmailParams, GenerateSubjectsParams, SegmentContactsParams } from "../shared/types.js";
+import type {
+  AIResult,
+  GenerateEmailParams,
+  HumanizeEmailParams,
+  GenerateSubjectsParams,
+  SegmentContactsParams,
+} from "../shared/types.js";
 
 // ── Abstract Provider Interface ───────────────────────────────────────────────
 
@@ -57,19 +63,12 @@ export abstract class BaseAIProvider implements AIProvider {
   abstract segmentContacts(params: SegmentContactsParams): Promise<AIResult>;
 
   /** Calculate approximate cost based on token usage */
-  protected calculateCost(
-    model: string,
-    promptTokens: number,
-    completionTokens: number
-  ): number {
+  protected calculateCost(model: string, promptTokens: number, completionTokens: number): number {
     // TODO: Import AI_TOKEN_COSTS from constants and compute properly
     // For now, a safe conservative estimate
     const costPer1kInput = 0.001;
     const costPer1kOutput = 0.002;
-    return (
-      (promptTokens / 1_000) * costPer1kInput +
-      (completionTokens / 1_000) * costPer1kOutput
-    );
+    return (promptTokens / 1_000) * costPer1kInput + (completionTokens / 1_000) * costPer1kOutput;
   }
 
   /** Build a standard AIResult with fallback flag */
@@ -78,7 +77,7 @@ export abstract class BaseAIProvider implements AIProvider {
     model: string,
     promptTokens: number,
     completionTokens: number,
-    fallbackUsed: boolean = false
+    fallbackUsed: boolean = false,
   ): AIResult {
     const totalTokens = promptTokens + completionTokens;
     return {

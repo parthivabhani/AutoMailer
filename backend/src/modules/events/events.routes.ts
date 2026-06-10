@@ -54,9 +54,12 @@ router.get(
 
     req.on("close", () => {
       clearInterval(intervalId);
-      logger.debug({ userId: req.user?.userId }, "Client disconnected from Queue Status SSE stream");
+      logger.debug(
+        { userId: req.user?.userId },
+        "Client disconnected from Queue Status SSE stream",
+      );
     });
-  }
+  },
 );
 
 export default router;

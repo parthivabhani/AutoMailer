@@ -43,7 +43,7 @@ export class SenderService {
           })),
           assignedSenderIds: [senderId],
         };
-      })
+      }),
     );
   }
 
@@ -60,7 +60,7 @@ export class SenderService {
       subject: string;
       body: string;
       recipientIds: string[];
-    }
+    },
   ) {
     const { csvId, segmentId, subject, body, recipientIds } = payload;
     const supabase = getSupabase();
@@ -73,15 +73,15 @@ export class SenderService {
       .single();
 
     if (!smtpConfig) {
-      throw new AppError("No SMTP configuration found for this outreach campaign. Configure SMTP credentials first.", 400, "SMTP_MISSING");
+      throw new AppError(
+        "No SMTP configuration found for this outreach campaign. Configure SMTP credentials first.",
+        400,
+        "SMTP_MISSING",
+      );
     }
 
     // 2. Fetch the CSV File to verify recipient IDs
-    const { data: csvFile } = await supabase
-      .from("csv_files")
-      .select("*")
-      .eq("id", csvId)
-      .single();
+    const { data: csvFile } = await supabase.from("csv_files").select("*").eq("id", csvId).single();
 
     if (!csvFile) {
       throw new NotFoundError("CSV Campaign list");
@@ -91,7 +91,11 @@ export class SenderService {
     const targetedRecipients = rows.filter((r) => recipientIds.includes(r._id));
 
     if (targetedRecipients.length === 0) {
-      throw new AppError("No matching recipients identified for campaign dispatch.", 400, "NO_RECIPIENTS");
+      throw new AppError(
+        "No matching recipients identified for campaign dispatch.",
+        400,
+        "NO_RECIPIENTS",
+      );
     }
 
     // 3. Create an ad-hoc campaign record to integrate with our modern queues and analytics
@@ -151,7 +155,7 @@ export class SenderService {
         senderOverride: false,
         delayBetweenEmailsMs: 300, // Safe default stagger pacing
         attachments: [],
-      }
+      },
     );
 
     return {

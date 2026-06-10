@@ -39,7 +39,7 @@ export function startAllWorkers(): void {
     workerLogger.warn(
       "FEATURE_REDIS_ENABLED=false — Workers are disabled. " +
         "Email sending will fall back to synchronous mode. " +
-        "This is NOT recommended for production."
+        "This is NOT recommended for production.",
     );
     return;
   }
@@ -64,7 +64,7 @@ export function startAllWorkers(): void {
 
     workerLogger.info(
       { workers: _activeWorkers.map((w) => w.name) },
-      `✅ ${_activeWorkers.length} workers started`
+      `✅ ${_activeWorkers.length} workers started`,
     );
   } catch (err) {
     workerLogger.error({ err }, "Failed to start workers");
@@ -96,22 +96,26 @@ export async function stopAllWorkers(): Promise<void> {
 // When this file is run directly as a process (not imported), start workers
 // and handle graceful shutdown signals.
 
-const isMain = process.argv[1]?.endsWith("worker.bootstrap.ts") ||
-               process.argv[1]?.endsWith("worker.bootstrap.js");
+const isMain =
+  process.argv[1]?.endsWith("worker.bootstrap.ts") ||
+  process.argv[1]?.endsWith("worker.bootstrap.js");
 
 if (isMain) {
   // Load environment first
-  import("dotenv").then(({ default: dotenv }) => {
-    dotenv.config();
-    return import("../config/env.js");
-  }).then(({ loadEnv }) => {
-    loadEnv();
-    startAllWorkers();
-    workerLogger.info("Worker process running in standalone mode");
-  }).catch((err) => {
-    console.error("Failed to start worker process:", err);
-    process.exit(1);
-  });
+  import("dotenv")
+    .then(({ default: dotenv }) => {
+      dotenv.config();
+      return import("../config/env.js");
+    })
+    .then(({ loadEnv }) => {
+      loadEnv();
+      startAllWorkers();
+      workerLogger.info("Worker process running in standalone mode");
+    })
+    .catch((err) => {
+      console.error("Failed to start worker process:", err);
+      process.exit(1);
+    });
 
   // Graceful shutdown on SIGTERM (Kubernetes, Docker stop)
   process.on("SIGTERM", async () => {

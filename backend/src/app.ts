@@ -42,7 +42,7 @@ export function createApp() {
     helmet({
       contentSecurityPolicy: false, // Disable for API (no HTML)
       crossOriginEmbedderPolicy: false,
-    })
+    }),
   );
 
   // ── CORS ────────────────────────────────────────────────────────────────────
@@ -52,16 +52,20 @@ export function createApp() {
     cors({
       origin: (origin, callback) => {
         // Allow requests with no origin (server-to-server, Postman)
-        if (!origin) { callback(null, true); return; }
+        if (!origin) {
+          callback(null, true);
+          return;
+        }
         if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) {
-          callback(null, true); return;
+          callback(null, true);
+          return;
         }
         callback(new Error(`CORS: Origin '${origin}' not allowed`));
       },
       methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "x-request-id"],
       credentials: true,
-    })
+    }),
   );
 
   // ── Body Parsing ────────────────────────────────────────────────────────────
@@ -73,7 +77,7 @@ export function createApp() {
 
   // ── Request ID ──────────────────────────────────────────────────────────────
   app.use((req: Request, res: Response, next: NextFunction) => {
-    const requestId = req.headers["x-request-id"] as string || crypto.randomUUID();
+    const requestId = (req.headers["x-request-id"] as string) || crypto.randomUUID();
     res.setHeader("x-request-id", requestId);
     (req as any).requestId = requestId;
     next();
@@ -141,7 +145,7 @@ export function createApp() {
       // Operational errors — known, expected
       logger.warn(
         { err, path: req.path, method: req.method, requestId: (req as any).requestId },
-        `Operational error: ${err.code}`
+        `Operational error: ${err.code}`,
       );
 
       return res.status(err.statusCode).json({
@@ -157,7 +161,7 @@ export function createApp() {
     // Programmer errors — unexpected
     logger.error(
       { err, path: req.path, method: req.method, requestId: (req as any).requestId },
-      "Unhandled error"
+      "Unhandled error",
     );
 
     return res.status(500).json({

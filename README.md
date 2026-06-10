@@ -5,6 +5,7 @@ Auto Mailer Pro is a high-performance,enterprise-grade AI-powered email marketin
 ---
 
 ## 📌 Table of Contents
+
 - [Core Features](#-core-features)
 - [Frontend UI/UX](#-frontend-uiux)
 - [Architecture & Tech Stack](#-architecture--tech-stack)
@@ -20,21 +21,25 @@ Auto Mailer Pro is a high-performance,enterprise-grade AI-powered email marketin
 ## 🌟 Core Features
 
 ### 👤 Role-Based Access Control (RBAC)
+
 The application has three tailored dashboards depending on user permissions:
-*   **Super Admin**: Platform-wide monitoring. Manage admin accounts, activate/suspend client organizations, and inspect system-wide transaction and usage statistics.
-*   **Admin**: Organization-level control. Upload CSV lead lists, set up SMTP server configurations, create and manage Sender accounts, segment leads using AI, and assign cohorts to specific Senders.
-*   **Sender**: Direct outreach operators. View assigned lists and cohorts, use generative AI tools to compose/humanize emails, generate subject line ideas, run campaigns, and track real-time delivery logs.
+
+- **Super Admin**: Platform-wide monitoring. Manage admin accounts, activate/suspend client organizations, and inspect system-wide transaction and usage statistics.
+- **Admin**: Organization-level control. Upload CSV lead lists, set up SMTP server configurations, create and manage Sender accounts, segment leads using AI, and assign cohorts to specific Senders.
+- **Sender**: Direct outreach operators. View assigned lists and cohorts, use generative AI tools to compose/humanize emails, generate subject line ideas, run campaigns, and track real-time delivery logs.
 
 ### 🧠 AI-Powered Campaign Tools
-*   **Smart Segmentation**: Automatically clusters lead lists (uploaded via CSV) into distinct target audiences using the Groq API.
-*   **Contextual Copywriting**: Generates highly personalized outreach drafts utilizing customizable prompts combined with lead fields (e.g., `{name}`, `{company}`).
-*   **Tone Humanizer**: Polishes generated drafts into natural, human-sounding outreach emails.
-*   **Subject Line Suggestions**: Recommends high-converting subject lines based on the body copy of the email.
+
+- **Smart Segmentation**: Automatically clusters lead lists (uploaded via CSV) into distinct target audiences using the Groq API.
+- **Contextual Copywriting**: Generates highly personalized outreach drafts utilizing customizable prompts combined with lead fields (e.g., `{name}`, `{company}`).
+- **Tone Humanizer**: Polishes generated drafts into natural, human-sounding outreach emails.
+- **Subject Line Suggestions**: Recommends high-converting subject lines based on the body copy of the email.
 
 ### ✉️ Safe & Scalable Email Distribution
-*   **Decentralized SMTP Configuration**: Admins configure their own SMTP transport (e.g., Google App Passwords) stored using modern encryption (`AES-256-CBC`) at rest.
-*   **Recipient De-duplication**: Automatically avoids sending duplicate emails to the same recipient within the same campaign, preserving sender domain reputation.
-*   **Audit Logging**: Every single delivery attempt is captured in real-time logs, including recipient details, statuses (delivered, bounced, pending), and timestamps.
+
+- **Decentralized SMTP Configuration**: Admins configure their own SMTP transport (e.g., Google App Passwords) stored using modern encryption (`AES-256-CBC`) at rest.
+- **Recipient De-duplication**: Automatically avoids sending duplicate emails to the same recipient within the same campaign, preserving sender domain reputation.
+- **Audit Logging**: Every single delivery attempt is captured in real-time logs, including recipient details, statuses (delivered, bounced, pending), and timestamps.
 
 ---
 
@@ -43,6 +48,7 @@ The application has three tailored dashboards depending on user permissions:
 The frontend features a modern, visually appealing design with smooth animations and enhanced user experience.
 
 ### Key Features
+
 - **Landing Page**: New dynamic landing page with animated backgrounds, floating stats, and colorful feature cards
 - **Enhanced Components**: All core components (StatCard, Sidebar, Topbar) have been redesigned with gradients, shadows, and hover effects
 - **Loading States**: Custom skeleton loaders for all data-fetching components
@@ -51,6 +57,7 @@ The frontend features a modern, visually appealing design with smooth animations
 - **Dark Mode**: Built-in theme toggle for dark/light mode switching
 
 ### Design System
+
 - **Color Palette**: Gradient backgrounds, primary accent colors, muted secondary colors
 - **Typography**: Bold headings with tight tracking, relaxed body text
 - **Spacing**: Consistent padding and margins (p-6, py-24, gap-4 to gap-8)
@@ -59,11 +66,13 @@ The frontend features a modern, visually appealing design with smooth animations
 - **Animations**: Pulse, bounce, spin, and custom slide/fade animations
 
 ### Component Library
+
 - **Layout Components**: DashboardShell, Sidebar, Topbar
 - **UI Components**: 46 shadcn/ui components (Button, Card, Table, Badge, etc.)
 - **Custom Components**: StatCard (enhanced), loading skeletons, empty states, animation wrappers
 
 ### Responsive Design
+
 - Mobile-first approach with breakpoints at md (768px) and lg (1024px)
 - Sidebar hidden on mobile, visible on desktop
 - Grid layouts adapt from 1 to 4 columns
@@ -76,23 +85,25 @@ For detailed frontend documentation, see [parthiv-frontend.readme](./parthiv-fro
 ## 💻 Architecture & Tech Stack
 
 ### Frontend
-*   **Framework**: [TanStack Start](https://tanstack.com/router/v1/docs/start/overview) (Server-side rendering, type-safe API, hydration & routing)
-*   **Router**: [TanStack Router](https://tanstack.com/router) (100% type-safe pathing & state management)
-*   **State & Queries**: [TanStack Query](https://tanstack.com/query) (React Query for asynchronous state synchronization)
-*   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Next-gen utility framework)
-*   **UI Components**: Radix UI primitives & Shadcn UI design patterns (46 components)
-*   **Icons**: Lucide React
-*   **Animations**: Custom animation wrappers with TailwindCSS (FadeIn, SlideIn, ScaleIn)
-*   **Loading States**: Custom skeleton loaders for all data-fetching components
-*   **Empty States**: Reusable empty state components with icons
-*   **Charts**: Recharts (for analytics and statistics)
+
+- **Framework**: [TanStack Start](https://tanstack.com/router/v1/docs/start/overview) (Server-side rendering, type-safe API, hydration & routing)
+- **Router**: [TanStack Router](https://tanstack.com/router) (100% type-safe pathing & state management)
+- **State & Queries**: [TanStack Query](https://tanstack.com/query) (React Query for asynchronous state synchronization)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Next-gen utility framework)
+- **UI Components**: Radix UI primitives & Shadcn UI design patterns (46 components)
+- **Icons**: Lucide React
+- **Animations**: Custom animation wrappers with TailwindCSS (FadeIn, SlideIn, ScaleIn)
+- **Loading States**: Custom skeleton loaders for all data-fetching components
+- **Empty States**: Reusable empty state components with icons
+- **Charts**: Recharts (for analytics and statistics)
 
 ### Backend
-*   **Runtime & Server**: Node.js & Express (written in pure TypeScript with `tsx` runner)
-*   **Database & Auth**: [Supabase](https://supabase.com/) (Auth, PostgreSQL database, and storage integration)
-*   **AI Engine**: [Groq SDK](https://github.com/groq/groq-node) (Fast inference with LLaMA model family)
-*   **Mailing Engine**: [Nodemailer](https://nodemailer.com/) (Customizable SMTP transports)
-*   **Encryption**: Built-in crypto module for securing SMTP credentials at rest
+
+- **Runtime & Server**: Node.js & Express (written in pure TypeScript with `tsx` runner)
+- **Database & Auth**: [Supabase](https://supabase.com/) (Auth, PostgreSQL database, and storage integration)
+- **AI Engine**: [Groq SDK](https://github.com/groq/groq-node) (Fast inference with LLaMA model family)
+- **Mailing Engine**: [Nodemailer](https://nodemailer.com/) (Customizable SMTP transports)
+- **Encryption**: Built-in crypto module for securing SMTP credentials at rest
 
 ---
 
@@ -141,6 +152,7 @@ For detailed frontend documentation, see [parthiv-frontend.readme](./parthiv-fro
 To run Auto Mailer Pro, both the frontend and backend require specific environment variables to be set up.
 
 ### Frontend Configurations
+
 Create a `.env` or `.env.local` file in the root of the project:
 
 ```env
@@ -149,6 +161,7 @@ VITE_API_BASE_URL=http://localhost:4000
 ```
 
 ### Backend Configurations
+
 Create a `.env` file in the `backend/` directory:
 
 ```env
@@ -172,10 +185,12 @@ SMTP_ENCRYPTION_SECRET=your-32-char-hex-encryption-key
 ## 🚀 Getting Started & Installation
 
 ### Prerequisites
-*   Node.js (version 18+ recommended)
-*   npm, yarn, pnpm, or bun
+
+- Node.js (version 18+ recommended)
+- npm, yarn, pnpm, or bun
 
 ### Step 1: Install Dependencies
+
 Install all dependencies in both the root workspace (frontend) and the backend directory:
 
 ```bash
@@ -189,23 +204,25 @@ cd ..
 ```
 
 ### Step 2: Set Up Environments
+
 Follow the steps in [Environment Variables Configuration](#-environment-variables-configuration) to populate `.env` files in both the root and `backend/` directories.
 
 ### Step 3: Run the Development Servers
+
 We have packaged convenient scripts inside the root `package.json` to spin up either the frontend, backend, or both concurrently:
 
-*   **Run both frontend & backend concurrently (Recommended)**:
-    ```bash
-    npm run dev:all
-    ```
-*   **Run frontend only**:
-    ```bash
-    npm run dev
-    ```
-*   **Run backend only**:
-    ```bash
-    npm run dev:backend
-    ```
+- **Run both frontend & backend concurrently (Recommended)**:
+  ```bash
+  npm run dev:all
+  ```
+- **Run frontend only**:
+  ```bash
+  npm run dev
+  ```
+- **Run backend only**:
+  ```bash
+  npm run dev:backend
+  ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
@@ -216,37 +233,45 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 For complete functionality, ensure your Supabase database includes a table called `profiles` mapped to `auth.users`. A sample schema overview is shown below:
 
 ### `profiles` Table
+
 Stores custom user profiles tied to Supabase Authentication.
-*   `id` (uuid, primary key references `auth.users.id`)
-*   `email` (text, unique)
-*   `name` (text)
-*   `role` (text: `'super_admin' | 'admin' | 'sender'`)
-*   `smtp_configured` (boolean, indicates if SMTP credentials have been set up by the admin)
+
+- `id` (uuid, primary key references `auth.users.id`)
+- `email` (text, unique)
+- `name` (text)
+- `role` (text: `'super_admin' | 'admin' | 'sender'`)
+- `smtp_configured` (boolean, indicates if SMTP credentials have been set up by the admin)
 
 ### Role-Based Route Mapping
-*   **Super Admin**: Redirected to `/super-admin` dashboard
-*   **Admin**: Redirected to `/admin` dashboard (or `/onboarding` if SMTP is not configured)
-*   **Sender**: Redirected to `/sender` dashboard
+
+- **Super Admin**: Redirected to `/super-admin` dashboard
+- **Admin**: Redirected to `/admin` dashboard (or `/onboarding` if SMTP is not configured)
+- **Sender**: Redirected to `/sender` dashboard
 
 ---
 
 ## 🌐 Deployment
 
 ### Frontend (Cloudflare Pages)
+
 Auto Mailer Pro is pre-configured with a `@cloudflare/vite-plugin` and `wrangler.jsonc` configuration, making it optimized for **Cloudflare Pages**.
 
 To build the frontend for production:
+
 ```bash
 npm run build
 ```
 
 To preview the build:
+
 ```bash
 npm run preview
 ```
 
 ### Backend (Node.js Host)
+
 To build and run the production Express API:
+
 ```bash
 cd backend
 npm run build
@@ -256,4 +281,5 @@ npm start
 ---
 
 ## 📄 License
+
 This project is private and proprietary. All rights reserved.

@@ -8,7 +8,13 @@
 
 import Groq from "groq-sdk";
 import { BaseAIProvider } from "../ai.provider.js";
-import type { AIResult, GenerateEmailParams, HumanizeEmailParams, GenerateSubjectsParams, SegmentContactsParams } from "../../shared/types.js";
+import type {
+  AIResult,
+  GenerateEmailParams,
+  HumanizeEmailParams,
+  GenerateSubjectsParams,
+  SegmentContactsParams,
+} from "../../shared/types.js";
 import { getEnv } from "../../config/env.js";
 import { logger } from "../../shared/logger.js";
 import {
@@ -62,10 +68,13 @@ export class GroqProvider extends BaseAIProvider {
         content,
         this.FAST_MODEL,
         usage?.prompt_tokens ?? 0,
-        usage?.completion_tokens ?? 0
+        usage?.completion_tokens ?? 0,
       );
     } catch (err) {
-      logger.error({ err, provider: this.name, operation: "generateEmail" }, "Groq generateEmail failed");
+      logger.error(
+        { err, provider: this.name, operation: "generateEmail" },
+        "Groq generateEmail failed",
+      );
       throw err;
     }
   }
@@ -89,10 +98,13 @@ export class GroqProvider extends BaseAIProvider {
         content,
         this.FAST_MODEL,
         usage?.prompt_tokens ?? 0,
-        usage?.completion_tokens ?? 0
+        usage?.completion_tokens ?? 0,
       );
     } catch (err) {
-      logger.error({ err, provider: this.name, operation: "humanizeEmail" }, "Groq humanizeEmail failed");
+      logger.error(
+        { err, provider: this.name, operation: "humanizeEmail" },
+        "Groq humanizeEmail failed",
+      );
       throw err;
     }
   }
@@ -120,10 +132,13 @@ export class GroqProvider extends BaseAIProvider {
         Array.isArray(subjects) ? subjects : [],
         this.FAST_MODEL,
         usage?.prompt_tokens ?? 0,
-        usage?.completion_tokens ?? 0
+        usage?.completion_tokens ?? 0,
       );
     } catch (err) {
-      logger.error({ err, provider: this.name, operation: "generateSubjects" }, "Groq generateSubjects failed");
+      logger.error(
+        { err, provider: this.name, operation: "generateSubjects" },
+        "Groq generateSubjects failed",
+      );
       throw err;
     }
   }
@@ -166,10 +181,13 @@ export class GroqProvider extends BaseAIProvider {
         JSON.stringify(Array.isArray(segments) ? segments : []),
         this.FAST_MODEL,
         usage?.prompt_tokens ?? 0,
-        usage?.completion_tokens ?? 0
+        usage?.completion_tokens ?? 0,
       );
     } catch (err) {
-      logger.error({ err, provider: this.name, operation: "segmentContacts" }, "Groq segmentContacts failed");
+      logger.error(
+        { err, provider: this.name, operation: "segmentContacts" },
+        "Groq segmentContacts failed",
+      );
       throw err;
     }
   }

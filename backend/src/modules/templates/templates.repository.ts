@@ -16,7 +16,7 @@ export class TemplatesRepository extends BaseRepository<Template> {
     businessId: string,
     userId: string,
     limit: number,
-    offset: number
+    offset: number,
   ): Promise<{ data: Template[]; count: number }> {
     const { data, count, error } = await getSupabase()
       .from("templates")

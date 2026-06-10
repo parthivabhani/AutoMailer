@@ -26,22 +26,18 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
 });
 
 // POST /admin/csv — Upload a new cold contact list
-router.post(
-  "/",
-  validate(UploadCsvSchema),
-  async (req: AuthenticatedRequest, res: Response) => {
-    const adminId = req.user!.userId;
-    const businessId = req.user!.businessId || adminId;
-    const { name, columns, rows } = req.body;
+router.post("/", validate(UploadCsvSchema), async (req: AuthenticatedRequest, res: Response) => {
+  const adminId = req.user!.userId;
+  const businessId = req.user!.businessId || adminId;
+  const { name, columns, rows } = req.body;
 
-    try {
-      const csv = await contactsService.uploadCsv(adminId, businessId, name, columns, rows);
-      return sendCreated(res, csv);
-    } catch (err: any) {
-      return sendError(res, 500, "UPLOAD_ERROR", err.message || "Failed to process contact list.");
-    }
+  try {
+    const csv = await contactsService.uploadCsv(adminId, businessId, name, columns, rows);
+    return sendCreated(res, csv);
+  } catch (err: any) {
+    return sendError(res, 500, "UPLOAD_ERROR", err.message || "Failed to process contact list.");
   }
-);
+});
 
 // POST /admin/csv/:id/segment — Trigger AI contact list segmentation
 router.post("/:id/segment", async (req: AuthenticatedRequest, res: Response) => {
@@ -74,10 +70,10 @@ router.post(
         res,
         err.statusCode || 500,
         err.code || "ASSIGN_ERROR",
-        err.message || "Failed to assign CSV list."
+        err.message || "Failed to assign CSV list.",
       );
     }
-  }
+  },
 );
 
 export default router;

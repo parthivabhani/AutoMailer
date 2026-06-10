@@ -50,16 +50,73 @@ export interface EmailLog {
 // ---- Seed data --------------------------------------------------------------
 
 export const mockAdmins: AdminAccount[] = [
-  { id: "u_admin", name: "Acme Marketing", email: "admin@demo.io", plan: "Growth", status: "active", joinedAt: "2025-03-12", emailsSent: 4218, sendersCount: 4 },
-  { id: "a_north", name: "Northwind Outreach", email: "ops@northwind.io", plan: "Scale", status: "active", joinedAt: "2024-11-02", emailsSent: 18904, sendersCount: 12 },
-  { id: "a_lumen", name: "Lumen Studio", email: "hello@lumen.studio", plan: "Starter", status: "suspended", joinedAt: "2025-01-22", emailsSent: 312, sendersCount: 1 },
-  { id: "a_pixel", name: "Pixelforge", email: "team@pixelforge.co", plan: "Growth", status: "active", joinedAt: "2024-08-19", emailsSent: 7621, sendersCount: 6 },
+  {
+    id: "u_admin",
+    name: "Acme Marketing",
+    email: "admin@demo.io",
+    plan: "Growth",
+    status: "active",
+    joinedAt: "2025-03-12",
+    emailsSent: 4218,
+    sendersCount: 4,
+  },
+  {
+    id: "a_north",
+    name: "Northwind Outreach",
+    email: "ops@northwind.io",
+    plan: "Scale",
+    status: "active",
+    joinedAt: "2024-11-02",
+    emailsSent: 18904,
+    sendersCount: 12,
+  },
+  {
+    id: "a_lumen",
+    name: "Lumen Studio",
+    email: "hello@lumen.studio",
+    plan: "Starter",
+    status: "suspended",
+    joinedAt: "2025-01-22",
+    emailsSent: 312,
+    sendersCount: 1,
+  },
+  {
+    id: "a_pixel",
+    name: "Pixelforge",
+    email: "team@pixelforge.co",
+    plan: "Growth",
+    status: "active",
+    joinedAt: "2024-08-19",
+    emailsSent: 7621,
+    sendersCount: 6,
+  },
 ];
 
 export const mockSenders: SenderAccount[] = [
-  { id: "u_sender", name: "Jamie Sender", email: "sender@demo.io", assignedCsvIds: ["csv_seed_1"], emailsSent: 320, createdAt: "2025-04-01" },
-  { id: "s_rachel", name: "Rachel Kim", email: "rachel@acme.io", assignedCsvIds: ["csv_seed_2"], emailsSent: 188, createdAt: "2025-04-08" },
-  { id: "s_dmitri", name: "Dmitri Volkov", email: "dmitri@acme.io", assignedCsvIds: [], emailsSent: 51, createdAt: "2025-05-15" },
+  {
+    id: "u_sender",
+    name: "Jamie Sender",
+    email: "sender@demo.io",
+    assignedCsvIds: ["csv_seed_1"],
+    emailsSent: 320,
+    createdAt: "2025-04-01",
+  },
+  {
+    id: "s_rachel",
+    name: "Rachel Kim",
+    email: "rachel@acme.io",
+    assignedCsvIds: ["csv_seed_2"],
+    emailsSent: 188,
+    createdAt: "2025-04-08",
+  },
+  {
+    id: "s_dmitri",
+    name: "Dmitri Volkov",
+    email: "dmitri@acme.io",
+    assignedCsvIds: [],
+    emailsSent: 51,
+    createdAt: "2025-05-15",
+  },
 ];
 
 const seedRows1: CSVRow[] = Array.from({ length: 24 }, (_, i) => ({
